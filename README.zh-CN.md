@@ -1,5 +1,7 @@
 # AI 数据库助手（DSH 插件）
 
+[English](README.md) | **简体中文**
+
 **用自然语言查询数据库，让 AI 帮你完成数据探索、分析与导出。**
 
 AI 数据库助手是一款基于 DeepSeek Harness（DSH）的数据库分析插件。你可以直接描述需求，让 AI 查看数据库结构、生成并执行只读 SQL、解释查询结果，并将结果导出为 XLSX、CSV 和 SQL 文件。
@@ -161,7 +163,7 @@ npm install --omit=dev
 
 **注意：** 源码 ZIP 不包含 `node_modules`。未安装运行时依赖可能导致部分数据库驱动无法加载，例如 SQL Server 提示缺少 `tedious`。
 
-详细说明参见 [安装指南](docs/INSTALL.md)。
+详细说明参见 [安装指南](docs/INSTALL.zh-CN.md)。
 
 ---
 
@@ -195,7 +197,7 @@ Windows 不一定预装 `sqlite3`，使用 SQLite 前请确认客户端已经安
 
 对于使用旧版 MySQL 认证插件的数据库，如果较新的客户端出现 `ERROR 2059`，可以尝试使用兼容的客户端版本，例如 MySQL 8.4 客户端，并检查数据库账号的认证配置。
 
-有关数据库依赖、连接条件和已知限制，请参阅 [数据库支持说明](docs/DATABASES.md)。
+有关数据库依赖、连接条件和已知限制，请参阅 [数据库支持说明](docs/DATABASES.zh-CN.md)。
 
 ---
 
@@ -409,11 +411,11 @@ Windows 用户可以在数据源配置中填写 `sqlite3.exe` 的完整路径。
 
 | 文档 | 内容 |
 |---|---|
-| [安装指南](docs/INSTALL.md) | 安装、升级、卸载、回退及常见问题 |
-| [使用指南](docs/USAGE.md) | 项目管理、自然语言查询和结果导出 |
-| [数据库支持](docs/DATABASES.md) | 数据库连接、客户端依赖、权限及限制 |
-| [插件详情](docs/DETAIL.md) | 功能简介与插件信息 |
-| [更新日志](CHANGELOG.md) | 正式版本的功能更新与修复记录 |
+| [安装指南](docs/INSTALL.zh-CN.md) | 安装、升级、卸载、回退及常见问题 |
+| [使用指南](docs/USAGE.zh-CN.md) | 项目管理、自然语言查询和结果导出 |
+| [数据库支持](docs/DATABASES.zh-CN.md) | 数据库连接、客户端依赖、权限及限制 |
+| [插件详情](docs/DETAIL.zh-CN.md) | 功能简介与插件信息 |
+| [更新日志](CHANGELOG.zh-CN.md) | 正式版本的功能更新与修复记录 |
 
 ---
 
