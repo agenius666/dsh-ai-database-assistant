@@ -1,5 +1,7 @@
 # 数据库支持
 
+[English](DATABASES.md) | **简体中文**
+
 本文介绍 AI 数据库助手（DSH 插件）支持的数据库类型、连接方式、客户端依赖、访问权限及已知限制。
 
 **适用版本：** `1.0.3`  
@@ -82,7 +84,7 @@ SQL Server 使用 `tedious@20.3.9` 原生 TDS 驱动，要求 Node.js `>= 22`。
 npm ci --omit=dev
 ```
 
-详细步骤请参阅 [安装与升级指南](INSTALL.md)。
+详细步骤请参阅 [安装与升级指南](INSTALL.zh-CN.md)。
 
 ### 指定客户端路径
 
@@ -374,8 +376,8 @@ SQL Server 不需要单独安装 `sqlcmd`。
 
 ## 9. 相关文档
 
-- [项目介绍](../README.md)
-- [安装与升级](INSTALL.md)
-- [使用指南](USAGE.md)
-- [插件详情](DETAIL.md)
-- [更新日志](../CHANGELOG.md)
+- [项目介绍](../README.zh-CN.md)
+- [安装与升级](INSTALL.zh-CN.md)
+- [使用指南](USAGE.zh-CN.md)
+- [插件详情](DETAIL.zh-CN.md)
+- [更新日志](../CHANGELOG.zh-CN.md)
