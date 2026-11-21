@@ -1,30 +1,32 @@
-# AI 数据库助手
+# AI Database Assistant
 
-**用自然语言查询数据库，让数据分析更简单。**
+**Query databases using natural language and simplify data analysis.**
 
-支持 MySQL、PostgreSQL、SQL Server、Oracle、SQLite 五类数据库。AI 可以自动查看表结构、生成并执行只读 SQL、分析查询结果，并导出 XLSX、CSV 和 SQL 文件。
+**English** | [简体中文](DETAIL.zh-CN.md)
 
-## 主要功能
+AI Database Assistant supports five database engines: MySQL, PostgreSQL, SQL Server, Oracle, and SQLite. AI can automatically explore table schemas, generate and execute read-only SQL queries, analyze query results, and export XLSX, CSV, and SQL files.
 
-- **自然语言查询**：直接提问，无需手动编写 SQL。
-- **智能数据分析**：AI 自动探索表结构，辅助统计、关联和数据核对。
-- **结果管理**：保存查询历史，支持查看 SQL、行数和结果详情。
-- **多格式导出**：一键导出 XLSX、CSV、SQL。
-- **多项目管理**：独立管理数据库连接和查询结果。
-- **安全只读**：限制非只读操作，建议配合数据库只读账号使用。
-- **多语言界面**：支持十种界面语言。
+## Key Features
 
-## 快速开始
+- **Natural-language queries:** Ask questions directly without writing SQL manually.
+- **AI-assisted analysis:** Automatically explore database schemas to help with statistics, joins, and data reconciliation.
+- **Result management:** Save query history and review executed SQL, row counts, and result details.
+- **Multiple export formats:** Export XLSX, CSV, and SQL files with one action.
+- **Multi-project management:** Manage database connections and query results independently across projects.
+- **Read-only safety:** Restrict non-read-only operations. Dedicated read-only database accounts are recommended.
+- **Multilingual interface:** Supports 10 interface languages.
 
-1. 新建项目并添加数据库连接。
-2. 点击「保存并测试」。
-3. 直接向 AI 描述查询需求。
-4. 查看分析结果，按需导出文件。
+## Quick Start
 
-## 运行要求
+1. Create a project and add a database connection.
+2. Click **Save and Test**.
+3. Describe your query requirements to AI in natural language.
+4. Review the analysis results and export files as needed.
 
-- **版本：** 1.0.3
-- **平台：** Windows、macOS
-- **环境：** DeepSeek Harness（DSH），Node.js >= 22
+## Requirements
 
-详细说明请参阅 [README](../README.md)。
+- **Version:** 1.0.3
+- **Platforms:** Windows and macOS
+- **Environment:** DeepSeek Harness (DSH), Node.js >= 22
+
+For detailed information, see the [README](../README.md).
