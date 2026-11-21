@@ -1,0 +1,65 @@
+
+name: Feature Request
+description: Suggest a new feature or improvement
+title: "[Feature]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve AI Database Assistant.
+
+        Please describe the problem and the improvement
+        you would like to see.
+
+        Do not include credentials or sensitive data.
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Feature category
+      options:
+        - AI query and analysis
+        - Database compatibility
+        - Database connection management
+        - Query results and exports
+        - User interface and experience
+        - Performance and stability
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What problem are you trying to solve?
+      placeholder: Describe your use case.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: Describe the feature you would like.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Optional alternative approaches.
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: |
+        Add relevant examples or screenshots.
+        Remove any sensitive information.
+    validations:
+      required: false
