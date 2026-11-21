@@ -1,0 +1,10 @@
+{
+  "meta": {
+    "title": "AI Database Assistant",
+    "description": "Read-only MySQL/PostgreSQL/SQL Server/Oracle/SQLite, natural-language querying, and XLSX/CSV/SQL export.",
+    "detail": "docs/DETAIL.md"
+  },
+  "panel": {
+    "label": "AI Database Assistant"
+  }
+}

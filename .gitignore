@@ -1,0 +1,14 @@
+node_modules/
+tmp/
+*.log
+coverage/
+.DS_Store
+.idea/
+.vscode/
+.env
+.env.*
+*.pem
+*.key
+*.local
+*.tgz
+.npmrc

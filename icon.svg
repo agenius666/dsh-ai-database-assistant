@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="AI database assistant · record analysis">
+  <defs>
+    <linearGradient id="iadr-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3a6fd8"/>
+      <stop offset="1" stop-color="#1d3f96"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#iadr-bg)"/>
+  <ellipse cx="27" cy="21" rx="12" ry="5" fill="none" stroke="#ffffff" stroke-width="3"/>
+  <path d="M15 21v22c0 2.8 5.4 5 12 5s12-2.2 12-5V21" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  <path d="M15 32c0 2.8 5.4 5 12 5s12-2.2 12-5" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="45" cy="42" r="11" fill="#2fb891"/>
+  <path d="m39.5 42.2 3.6 3.6 7-8" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

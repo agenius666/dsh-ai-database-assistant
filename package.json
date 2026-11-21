@@ -1,0 +1,82 @@
+{
+  "name": "@agenius/dsh-ai-database-assistant",
+  "version": "1.0.3",
+  "type": "module",
+  "main": "./index.js",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "description": "Read-only AI database assistant for DSH on Windows/macOS: MySQL/PostgreSQL/SQL Server/Oracle/SQLite exploration, natural-language SQL analysis, and XLSX/CSV/SQL export.",
+  "license": "Apache-2.0",
+  "exports": {
+    ".": "./index.js",
+    "./routes": "./routes.js",
+    "./tools": "./tools.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "routes.js",
+    "tools.js",
+    "client.js",
+    "cordis.patch.yml",
+    "README.md",
+    "CHANGELOG.md",
+    "NOTICE",
+    "LICENSE",
+    "src/**",
+    "locale/*.json",
+    "docs/DETAIL.md",
+    "docs/INSTALL.md",
+    "docs/USAGE.md",
+    "docs/DATABASES.md",
+    "icon.svg"
+  ],
+  "dsh": {
+    "engines": {
+      "dsh": ">=0.2.2-rc.1"
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-layout",
+        "@deepseek-ai/dsh-client-ui-renderer",
+        "@deepseek-ai/dsh-client-ui-session",
+        "@deepseek-ai/dsh-client-ui-sidebar",
+        "@deepseek-ai/dsh-client-ui-workspace"
+      ]
+    }
+  },
+  "dependencies": {
+    "tedious": "20.3.9"
+  },
+  "author": "AI Database Assistant contributors",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "database",
+    "sql-analysis",
+    "xlsx-export"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agenius666/dsh-ai-database-assistant.git"
+  },
+  "homepage": "https://github.com/agenius666/dsh-ai-database-assistant#readme",
+  "bugs": {
+    "url": "https://github.com/agenius666/dsh-ai-database-assistant/issues"
+  }
+}
