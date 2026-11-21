@@ -4,6 +4,25 @@
 
 This document records official releases, feature improvements, compatibility changes, and known limitations of AI Database Assistant (DSH Plugin).
 
+## 1.0.4
+
+This release is a documentation and packaging update. No changes were made to database queries, read-only safety checks, business logic, or user interface behavior.
+
+### Documentation and Packaging
+
+- **Chinese documentation is now included in the npm package:** `README.zh-CN.md`, `CHANGELOG.zh-CN.md`, and the Chinese versions of the installation, usage, database support, and plugin detail guides now ship with the package, so they are available in an installed copy.
+- **The Chinese plugin detail page is selected automatically:** the `zh` locale points to `docs/DETAIL.zh-CN.md`, while the `en` locale continues to point to `docs/DETAIL.md`.
+- **Improved bilingual documentation links:** navigation links between the English and Chinese README, changelog, installation guide, user guide, database support guide, and plugin detail page now point to the matching language.
+
+### Interface Languages
+
+- The plugin continues to support 10 interface languages: Simplified Chinese, Traditional Chinese, English, Japanese, Korean, Spanish, French, German, Russian, and Portuguese.
+- Plugin directory detail pages are maintained in Chinese and English only; other interface languages use the English detail page according to DSH rules.
+
+### Platforms
+
+- Windows and macOS remain the supported platforms. Linux is not supported.
+
 ## 1.0.3
 
 This release focuses on improving **Windows/macOS compatibility, database read-only safety, query result accuracy, and runtime stability**, along with enhancements to installation procedures, error handling, and multilingual interfaces.

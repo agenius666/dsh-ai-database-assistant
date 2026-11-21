@@ -4,7 +4,7 @@
 
 This document describes the database engines supported by AI Database Assistant (DSH Plugin), their connection methods, client dependencies, access permissions, and known limitations.
 
-**Applicable version:** `1.0.3`  
+**Applicable version:** `1.0.4`  
 **Supported platforms:** Windows and macOS  
 **Runtime:** DeepSeek Harness (DSH)  
 **Node.js:** `>= 22`

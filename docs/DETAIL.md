@@ -25,7 +25,7 @@ AI Database Assistant supports five database engines: MySQL, PostgreSQL, SQL Ser
 
 ## Requirements
 
-- **Version:** 1.0.3
+- **Version:** 1.0.4
 - **Platforms:** Windows and macOS
 - **Environment:** DeepSeek Harness (DSH), Node.js >= 22
 

@@ -30,13 +30,13 @@ for (const file of jsFiles) {
 }
 
 const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
-if (pkg.version !== '1.0.3') throw new Error(`unexpected version: ${pkg.version}`);
+if (pkg.version !== '1.0.4') throw new Error(`unexpected version: ${pkg.version}`);
 if (pkg.engines?.node !== '>=22.0.0') throw new Error('unexpected engines.node');
 const tedious = JSON.parse(readFileSync(join(root, 'node_modules/tedious/package.json'), 'utf8'));
 if (tedious.version !== '20.3.9') throw new Error(`unexpected tedious: ${tedious.version}`);
 
 const host = await import(pathToFileURL(join(root, 'index.js')).href);
-if (host.PLUGIN_VERSION !== '1.0.3') throw new Error(`unexpected PLUGIN_VERSION: ${host.PLUGIN_VERSION}`);
+if (host.PLUGIN_VERSION !== '1.0.4') throw new Error(`unexpected PLUGIN_VERSION: ${host.PLUGIN_VERSION}`);
 await import(pathToFileURL(join(root, 'routes.js')).href);
 await import(pathToFileURL(join(root, 'tools.js')).href);
 console.log(`public source verification passed: ${jsFiles.length} JavaScript files, version ${pkg.version}, tedious ${tedious.version}`);

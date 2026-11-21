@@ -25,7 +25,7 @@
 
 ## 运行要求
 
-- **版本：** 1.0.3
+- **版本：** 1.0.4
 - **平台：** Windows、macOS
 - **环境：** DeepSeek Harness（DSH），Node.js >= 22
 

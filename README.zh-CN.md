@@ -8,7 +8,7 @@ AI 数据库助手是一款基于 DeepSeek Harness（DSH）的数据库分析插
 
 支持 **MySQL、PostgreSQL、SQL Server、Oracle、SQLite** 五类数据库。
 
-> **当前版本：** 1.0.3  
+> **当前版本：** 1.0.4  
 > **支持平台：** Windows、macOS  
 > **运行环境：** DeepSeek Harness（DSH）  
 > **Node.js：** >= 22  

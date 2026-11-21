@@ -4,7 +4,7 @@
 
 This guide explains how to install, upgrade, uninstall, roll back, and troubleshoot AI Database Assistant (DSH Plugin).
 
-**Applicable version:** `1.0.3`
+**Applicable version:** `1.0.4`
 
 AI Database Assistant runs as a plugin within DeepSeek Harness (DSH). It is not a standalone database client.
 

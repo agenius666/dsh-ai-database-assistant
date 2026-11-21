@@ -8,7 +8,7 @@ AI Database Assistant is a database analysis plugin for DeepSeek Harness (DSH). 
 
 The plugin supports **MySQL, PostgreSQL, SQL Server, Oracle, and SQLite**.
 
-> **Current version:** 1.0.3  
+> **Current version:** 1.0.4  
 > **Supported platforms:** Windows and macOS  
 > **Runtime:** DeepSeek Harness (DSH)  
 > **Node.js:** 22 or later  

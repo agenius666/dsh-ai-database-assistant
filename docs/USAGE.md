@@ -4,7 +4,7 @@
 
 This guide explains how to use AI Database Assistant (DSH Plugin) to create projects, connect to databases, query data using natural language, review results, and export files.
 
-**Applicable version:** `1.0.3`  
+**Applicable version:** `1.0.4`  
 **Supported platforms:** Windows and macOS  
 **Supported databases:** MySQL, PostgreSQL, SQL Server, Oracle, and SQLite
 

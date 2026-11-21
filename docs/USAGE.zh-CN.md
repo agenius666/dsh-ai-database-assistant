@@ -4,7 +4,7 @@
 
 本文介绍如何使用 AI 数据库助手（DSH 插件）创建项目、连接数据库、通过自然语言查询数据、查看结果以及导出文件。
 
-**适用版本：** `1.0.3`  
+**适用版本：** `1.0.4`  
 **支持平台：** Windows、macOS  
 **支持数据库：** MySQL、PostgreSQL、SQL Server、Oracle、SQLite
 

@@ -23,7 +23,7 @@ import {defaultStorageRoot, JsonStore} from './src/store.js';
 export const name = 'ai-database-assistant';
 
 /** Plugin version; must match package.json. */
-export const PLUGIN_VERSION = '1.0.3';
+export const PLUGIN_VERSION = '1.0.4';
 
 /** Default limits, all overridable through the bundle patch `config`. */
 export const DEFAULTS = Object.freeze({
