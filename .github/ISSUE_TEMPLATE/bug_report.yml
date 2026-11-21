@@ -1,0 +1,93 @@
+
+name: Bug Report
+description: Report a bug in AI Database Assistant
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting an issue.
+
+        Do not include passwords, API keys, connection strings,
+        production data, or other sensitive information.
+
+        For security vulnerabilities, use private vulnerability
+        reporting instead of public Issues.
+
+  - type: input
+    id: plugin-version
+    attributes:
+      label: Plugin version
+      placeholder: "1.0.3"
+    validations:
+      required: true
+
+  - type: input
+    id: dsh-version
+    attributes:
+      label: DSH version
+      placeholder: "Enter your DSH version"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: Operating system
+      options:
+        - Windows
+        - macOS
+    validations:
+      required: true
+
+  - type: dropdown
+    id: database
+    attributes:
+      label: Database type
+      options:
+        - MySQL
+        - PostgreSQL
+        - SQL Server
+        - Oracle
+        - SQLite
+        - Not database-related
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Problem description
+      description: Explain what went wrong.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open...
+        2. Select...
+        3. Click...
+        4. Observe...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error messages or screenshots
+      description: |
+        Optional. Remove all credentials and sensitive data.
+        Do not submit security vulnerabilities here.
+    validations:
+      required: false
