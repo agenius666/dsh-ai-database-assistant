@@ -1,68 +1,70 @@
-# 更新日志
+# Changelog
 
-本文件记录 AI 数据库助手（DSH 插件）的正式版本更新、功能改进、兼容性调整及已知限制。
+**English** | [简体中文](CHANGELOG.zh-CN.md)
+
+This document records official releases, feature improvements, compatibility changes, and known limitations of AI Database Assistant (DSH Plugin).
 
 ## 1.0.3
 
-本次更新重点提升了 **Windows/macOS 兼容性、数据库只读安全性、查询结果准确性及运行稳定性**，同时完善安装流程、错误处理和多语言界面。
+This release focuses on improving **Windows/macOS compatibility, database read-only safety, query result accuracy, and runtime stability**, along with enhancements to installation procedures, error handling, and multilingual interfaces.
 
-### 安装与兼容性
+### Installation and Compatibility
 
-- **正式支持 Windows 和 macOS**，通过 DeepSeek Harness（DSH）运行；Linux 暂不属于正式支持范围。
-- **Node.js 最低版本调整为 22**，与数据库驱动的运行环境要求保持一致。已验证的 Windows/macOS DSH Host 使用 Node.js 24.21.0。
-- **SQL Server 改用内置的原生 TDS 驱动** `tedious@20.3.9`，无需额外安装 `sqlcmd`。
-- **完善运行时依赖安装说明**：通过 npm 安装时自动安装所需依赖；使用本地 ZIP 或源码目录安装时，需先执行 `npm ci --omit=dev`。
-- 优化不同数据库客户端的连接兼容性及异常提示，便于排查环境配置、认证和驱动问题。
+- **Official support for Windows and macOS** through DeepSeek Harness (DSH). Linux is not an officially supported platform.
+- **Minimum Node.js version increased to 22** to align with database driver requirements. Verified Windows/macOS DSH Host environments use Node.js 24.21.0.
+- **SQL Server now uses the built-in native TDS driver** `tedious@20.3.9`, eliminating the need to install `sqlcmd`.
+- **Improved runtime dependency installation guidance:** Required dependencies are installed automatically through npm. When installing from a local ZIP or source directory, run `npm ci --omit=dev` first.
+- Improved connection compatibility and error reporting across database clients to make configuration, authentication, and driver issues easier to diagnose.
 
-### 数据库安全
+### Database Security
 
-- **增强只读 SQL 检查**，进一步限制可能绕过只读保护的多语句及客户端命令。
-- 加强 SQL Server 多语句检查，防止通过特殊换行、注释等方式组合执行非只读操作。
-- 加强 Oracle SQL*Plus 客户端命令检查，拒绝危险指令及利用空行、控制字符隐藏的非只读语句。
-- 加强 SQLite 查询限制，阻止通过相关扩展函数访问或修改主机文件。
-- 保留查询超时、结果行数及输出字节数限制；超限结果将明确标记为不完整，并禁止导出。
+- **Strengthened read-only SQL validation** to further restrict multi-statement execution and client commands that could bypass read-only protections.
+- Enhanced SQL Server multi-statement validation to prevent non-read-only operations from being combined using unusual line breaks, comments, or similar techniques.
+- Strengthened Oracle SQL*Plus client-command validation to reject dangerous commands and non-read-only statements concealed by blank lines or control characters.
+- Improved SQLite query restrictions to prevent related extension functions from accessing or modifying host files.
+- Retained query timeout, result row count, and output size limits. Results exceeding these limits are explicitly marked as incomplete and cannot be exported.
 
-**安全建议：** 始终使用独立的数据库只读账号，并仅授予必要的查询权限。插件的 SQL 安全检查不能替代数据库自身的访问控制。
+**Security recommendation:** Always use a dedicated read-only database account with only the permissions required for the intended queries. The plugin's SQL safety checks do not replace database-level access controls.
 
-### 查询结果与数据准确性
+### Query Results and Data Accuracy
 
-- **提升 SQL Server 高精度数值处理能力**，避免 `MONEY`、`SMALLMONEY` 和高精度 `DECIMAL` 在普通数值转换过程中发生精度损失。
-- 优化查询结果快照管理，确保结果预览、完整性判断及导出使用一致的数据来源。
-- 修正部分分页与结果截断场景中的完整性判断，避免将不完整的数据误标记为完整结果。
-- 改进空结果集的列名保留与显示，便于识别查询返回的字段结构。
-- 改进查询截断提示和 `LEFT JOIN` 相关检查提示。
-- 完善 XLSX、CSV、SQL 导出处理，提升金额及高精度数值的准确性和一致性。
+- **Improved high-precision SQL Server numeric handling** to avoid precision loss when `MONEY`, `SMALLMONEY`, and high-precision `DECIMAL` values are converted through ordinary numeric representations.
+- Improved query result snapshot management so previews, completeness checks, and exports use a consistent source of saved data.
+- Corrected completeness checks in certain pagination and result truncation scenarios to prevent incomplete datasets from being incorrectly marked as complete.
+- Improved column name preservation and display for empty result sets, helping users identify the structure of returned query data.
+- Improved messages related to query truncation and `LEFT JOIN` validation.
+- Enhanced XLSX, CSV, and SQL export handling to improve the accuracy and consistency of monetary and high-precision numeric values.
 
-### 项目与数据保护
+### Project and Data Protection
 
-- **增强项目配置文件保护机制**：当项目配置索引损坏或格式异常时，插件会拒绝可能覆盖原有配置的操作，并返回明确错误提示。
-- 损坏的项目索引不会被自动替换为空配置，原有项目数据目录予以保留。
-- 正常情况下，项目、数据库连接、保存目录及查询历史按项目组织和隔离。
-- 改进异常处理及错误反馈，降低配置异常对后续操作的影响。
+- **Strengthened project configuration file protection:** When a project configuration index is corrupted or malformed, the plugin rejects operations that could overwrite the original configuration and provides a clear error message.
+- A corrupted project index is not automatically replaced with an empty configuration, and the original project data directory is preserved.
+- Under normal operation, projects, database connections, export directories, and query histories are organized and isolated by project.
+- Improved exception handling and error reporting to reduce the impact of configuration errors on subsequent operations.
 
-对于损坏的项目配置，可能仍需用户手动修复或从备份恢复。
+Corrupted project configurations may still require manual repair or restoration from a backup.
 
-### 界面与使用体验
+### User Interface and Experience
 
-- **完善十种界面语言支持**：简体中文、繁体中文、英语、日语、韩语、西班牙语、法语、德语、俄语及葡萄牙语。
-- 界面语言跟随 DSH 设置，优化部分文本、状态信息及错误提示。
-- 改进数据库连接测试与失败反馈，尽可能保留有助于排查问题的原始错误信息，并对敏感内容进行处理。
-- 优化「询问 AI」入口及错误上下文传递，便于在会话中进一步分析连接与查询异常。
-- 提升项目切换、结果展示和文件导出等操作的稳定性。
+- **Expanded and refined support for 10 interface languages:** Simplified Chinese, Traditional Chinese, English, Japanese, Korean, Spanish, French, German, Russian, and Portuguese.
+- Interface language follows the DSH language settings, with improvements to selected labels, status messages, and error notifications.
+- Improved database connection testing and failure feedback, preserving useful original error details where possible while handling sensitive information.
+- Refined the **Ask AI** entry point and error context transfer to help users investigate connection and query failures through AI conversations.
+- Improved stability when switching projects, displaying query results, and exporting files.
 
-### 已知限制
+### Known Limitations
 
-- **SQL Server 时间精度**：`datetime2`、`time`、`datetimeoffset` 类型的小数秒精度超过三位时，当前驱动读取结果可能仅保留毫秒精度。如需保留完整精度，可在 SQL 中将相应字段转换为文本。
-- **查询结果大小**：超过行数或输出字节限制的结果会被标记为不完整，不允许直接导出。建议缩小查询范围、增加筛选条件或先进行聚合。
-- **Windows 网络共享**：UNC 路径的实际可用性取决于网络连接、共享权限及系统配置；无法安全访问的目录会被拒绝。
-- **外部数据库客户端**：MySQL、PostgreSQL、Oracle 和 SQLite 仍需要相应命令行客户端；SQL Server 使用内置驱动。
-- **项目配置恢复**：损坏的项目配置索引受到覆盖保护，但当前不提供自动备份恢复功能。
-- **平台范围**：本版本仅正式支持 Windows 和 macOS，不承诺 Linux 环境兼容性。
+- **SQL Server time precision:** For `datetime2`, `time`, and `datetimeoffset`, fractional seconds with more than three digits may be retrieved at millisecond precision only. To preserve full precision, convert the relevant column to text in the SQL query.
+- **Query result size:** Results exceeding row count or output byte limits are marked as incomplete and cannot be exported directly. Narrow the query scope, add filters, or aggregate data first.
+- **Windows network shares:** The availability of UNC paths depends on network connectivity, share permissions, and system configuration. Directories that cannot be accessed safely will be rejected.
+- **External database clients:** MySQL, PostgreSQL, Oracle, and SQLite still require their corresponding command-line clients. SQL Server uses the built-in driver.
+- **Project configuration recovery:** Corrupted project configuration indexes are protected against overwriting, but automatic backup restoration is not currently provided.
+- **Platform scope:** This release officially supports Windows and macOS only. Linux compatibility is not guaranteed.
 
 ---
 
-更多安装、数据库连接及使用说明，请参阅：
+For more information about installation, database connections, and usage, see:
 
-- [安装指南](docs/INSTALL.md)
-- [使用指南](docs/USAGE.md)
-- [数据库支持](docs/DATABASES.md)
+- [Installation Guide](docs/INSTALL.md)
+- [User Guide](docs/USAGE.md)
+- [Database Support](docs/DATABASES.md)
