@@ -1,423 +1,425 @@
-# 安装与升级指南
+# Installation and Upgrade Guide
 
-本文介绍 AI 数据库助手（DSH 插件）的安装、升级、卸载、版本回退及常见问题处理方法。
+**English** | [简体中文](INSTALL.zh-CN.md)
 
-**适用版本：** `1.0.3`
+This guide explains how to install, upgrade, uninstall, roll back, and troubleshoot AI Database Assistant (DSH Plugin).
 
-AI 数据库助手需要安装在 DeepSeek Harness（DSH）中使用，并非独立的数据库客户端。
+**Applicable version:** `1.0.3`
 
-## 1. 系统要求
+AI Database Assistant runs as a plugin within DeepSeek Harness (DSH). It is not a standalone database client.
 
-| 项目 | 要求 |
+## 1. System Requirements
+
+| Component | Requirement |
 |---|---|
-| 支持平台 | **Windows、macOS** |
-| DSH 版本 | `>= 0.2.2-rc.1` |
+| Supported platforms | **Windows and macOS** |
+| DSH version | `>= 0.2.2-rc.1` |
 | Node.js | `>= 22` |
-| 数据库账号 | 建议使用独立的只读账号，并仅授予必要的查询权限 |
-| 网络要求 | DSH 所在设备能够访问目标数据库 |
-| 外部客户端 | 根据数据库类型安装对应的命令行客户端 |
+| Database account | A dedicated read-only account with only the necessary query permissions is recommended |
+| Network | The device running DSH must be able to access the target database |
+| External clients | Install the required command-line client for the selected database engine |
 
-**平台说明：** 本版本仅正式支持 Windows 和 macOS，Linux 不在正式支持范围内。
+**Platform support:** This version officially supports Windows and macOS only. Linux is not officially supported.
 
-**运行时说明：** 已验证的 Windows/macOS DSH Host 使用内置 Node.js 24.21.0，通常无需额外安装 Node.js。使用本地命令执行安装操作时，请确保相应 Node.js 和 npm 环境可用。
+**Runtime:** Verified Windows/macOS DSH Host environments include Node.js 24.21.0, so a separate Node.js installation is usually unnecessary. When running installation commands locally, ensure that the required Node.js and npm environment is available.
 
-### 数据库客户端要求
+### Database Client Requirements
 
-| 数据库 | 所需客户端 | 默认端口 |
+| Database | Required Client | Default Port |
 |---|---|---|
 | MySQL | `mysql` | 3306 |
 | PostgreSQL | `psql` | 5432 |
-| SQL Server | 内置 `tedious@20.3.9` 驱动 | 1433 |
+| SQL Server | Built-in `tedious@20.3.9` driver | 1433 |
 | Oracle | `sqlplus` | 1521 |
 | SQLite | `sqlite3` | — |
 
-SQL Server 使用原生 TDS 驱动，**无需安装 `sqlcmd`**。
+SQL Server uses a native TDS driver. **You do not need to install `sqlcmd`.**
 
-MySQL、PostgreSQL、Oracle 和 SQLite 需要在本机安装对应客户端，并保证客户端可执行。
+MySQL, PostgreSQL, Oracle, and SQLite require their corresponding command-line clients to be installed locally and executable.
 
-客户端可以通过系统 `PATH` 查找，也可以在数据库连接设置中填写可执行文件的绝对路径。
+The plugin can locate these clients through the system `PATH`. Alternatively, you can specify an absolute executable path in the database connection settings.
 
-Windows 不一定预装 SQLite 命令行客户端，使用 SQLite 前请确认 `sqlite3.exe` 已正确安装。
+Windows does not necessarily include the SQLite command-line client. Before using SQLite, verify that `sqlite3.exe` is installed correctly.
 
-详细要求参见 [数据库支持说明](DATABASES.md)。
+For details, see [Database Support](DATABASES.md).
 
 ---
 
-## 2. 安装插件
+## 2. Installing the Plugin
 
-提供三种安装方式，建议优先使用 DSH 内置插件管理功能。
+Three installation methods are available. Using DSH's built-in plugin management feature is recommended.
 
-### 方式一：通过 DSH 安装（推荐）
+### Option 1: Install Through DSH (Recommended)
 
-1. 打开 DeepSeek Harness。
-2. 进入 **Plugins → Add plugin**。
-3. 输入插件包名：
+1. Open DeepSeek Harness.
+2. Navigate to **Plugins → Add plugin**.
+3. Enter the package name:
 
 ```text
 @agenius/dsh-ai-database-assistant
 ```
 
-4. 按照界面提示完成安装并启用插件。
-5. 重启 DSH，使插件完成加载。
+4. Follow the on-screen instructions to install and enable the plugin.
+5. Restart DSH to complete plugin loading.
 
-安装成功后，左侧栏将出现「AI 数据库助手」，在新建会话的预设列表中也可以选择对应助手。
+After installation, **AI Database Assistant** should appear in the left sidebar. You should also be able to select the corresponding assistant from the preset list when creating a new conversation.
 
-通过 DSH 的 npm 包安装流程，所需的运行时依赖会随软件包一同安装。
+When installing the npm package through DSH, the required runtime dependencies are installed along with the package.
 
-### 方式二：通过 npm 安装
+### Option 2: Install Using npm
 
-如果需要通过命令行安装，可以执行：
+To install the package from the command line, run:
 
 ```bash
 npm install @agenius/dsh-ai-database-assistant
 ```
 
-npm 将安装插件及其声明的运行时依赖，包括 SQL Server 使用的 `tedious@20.3.9`。
+npm installs the plugin and its declared runtime dependencies, including `tedious@20.3.9` for SQL Server.
 
-**注意：** 此命令仅完成 npm 软件包安装，不代表插件已自动注册到 DSH。
+**Important:** This command installs the npm package only. It does not automatically register the plugin in DSH.
 
-安装完成后，仍需在 **Plugins → Add plugin** 中添加并启用对应插件。
+After installation, you must still add and enable the plugin through **Plugins → Add plugin**.
 
-### 方式三：通过本地 ZIP 或源码目录安装
+### Option 3: Install From a Local ZIP or Source Directory
 
-适用于离线部署、本地测试或使用 GitHub 源码的场景。
+This method is suitable for offline deployment, local testing, or installation from GitHub source code.
 
-源码压缩包通常不包含 `node_modules`，因此需要先安装运行时依赖。
+Source archives typically do not include `node_modules`, so runtime dependencies must be installed first.
 
-**第一步：下载并解压**
+**Step 1: Download and extract**
 
-从 GitHub 下载源码 ZIP，解压到准备使用的插件目录。
+Download the source ZIP from GitHub and extract it into the directory where you intend to install the plugin.
 
-项目地址：
+Project repository:
 
 https://github.com/agenius666/dsh-ai-database-assistant
 
-**第二步：安装运行时依赖**
+**Step 2: Install runtime dependencies**
 
-在终端中进入解压后的插件目录。
+Open a terminal and navigate to the extracted plugin directory.
 
-macOS：
+macOS:
 
 ```bash
 cd "/path/to/dsh-ai-database-assistant"
 npm ci --omit=dev
 ```
 
-Windows PowerShell：
+Windows PowerShell:
 
 ```powershell
 Set-Location "C:\path\to\dsh-ai-database-assistant"
 npm ci --omit=dev
 ```
 
-请将示例路径替换为实际安装位置。
+Replace the example path with your actual installation directory.
 
-如果目录中没有 `package-lock.json`，可以改用：
+If the directory does not contain `package-lock.json`, use:
 
 ```bash
 npm install --omit=dev
 ```
 
-建议优先使用包含 `package-lock.json` 的正式源码包，以安装经过锁定的依赖版本。
+Using an official source package that includes `package-lock.json` is recommended so that the locked dependency versions can be installed.
 
-**第三步：在 DSH 中启用**
+**Step 3: Enable the plugin in DSH**
 
-1. 打开 **Plugins → Add plugin**。
-2. 选择已经安装依赖的本地插件目录。
-3. 添加并启用插件。
-4. 重启 DSH。
+1. Open **Plugins → Add plugin**.
+2. Select the local plugin directory where the runtime dependencies were installed.
+3. Add and enable the plugin.
+4. Restart DSH.
 
-**重要说明：**
+**Important notes:**
 
-本地 ZIP 或源码目录安装不会自动生成 `node_modules`。
+Installing from a local ZIP or source directory does not automatically generate `node_modules`.
 
-如果未执行依赖安装，SQL Server 可能提示缺少 `tedious` 驱动。通常只需返回插件目录执行 `npm ci --omit=dev`，无需修改插件源码。
+If runtime dependencies have not been installed, SQL Server may report that the `tedious` driver is missing. Usually, you only need to return to the plugin directory and run `npm ci --omit=dev`. Modifying the plugin source code is not necessary.
 
-其他数据库所需的外部命令行客户端仍需单独安装。
-
----
-
-## 3. 安装后验证
-
-建议首次安装后完成以下检查。
-
-### 检查插件是否加载
-
-确认：
-
-- DSH 左侧栏出现「AI 数据库助手」。
-- 新建会话时可以选择「AI 数据库助手」预设。
-- 插件工作台能够正常打开。
-- 项目、数据库连接、查询结果等页面正常显示。
-
-### 检查数据库连接
-
-1. 新建一个测试项目。
-2. 选择数据库类型。
-3. 填写数据库连接信息。
-4. 如有需要，指定客户端可执行文件路径。
-5. 点击 **「保存并测试」**。
-
-测试成功后，再执行只读查询。
-
-建议首次测试使用具备最小读取权限的测试账号，不要直接使用生产数据库管理员账号。
-
-### 检查结果导出
-
-如需使用导出功能：
-
-1. 在项目的「交付设置」中选择保存目录。
-2. 执行一条只读查询。
-3. 确认查询结果完整。
-4. 点击「导出」。
-5. 检查 XLSX、CSV 和 SQL 文件是否正常生成。
-
-结果不完整、保存目录未授权或数据快照已被清理时，插件可能拒绝导出。
-
-完成安装后，可以继续阅读 [使用指南](USAGE.md)。
+External command-line clients required by other database engines must still be installed separately.
 
 ---
 
-## 4. 升级插件
+## 3. Verifying the Installation
 
-建议通过 DSH 插件管理功能升级到新的正式版本。
+Complete the following checks after the first installation.
 
-### 升级前准备
+### Verify Plugin Loading
 
-为避免因异常情况造成数据丢失，建议升级前：
+Confirm that:
 
-1. 记录当前插件版本。
-2. 备份项目配置和历史结果。
-3. 确认新版本的 Node.js 和 DSH 兼容要求。
-4. 阅读新版本的更新日志及已知限制。
+- **AI Database Assistant** appears in the DSH sidebar.
+- The **AI Database Assistant** preset is available when creating a new conversation.
+- The plugin workspace opens correctly.
+- Project, database connection, and query result pages are displayed normally.
 
-插件数据通常保存在用户目录下：
+### Verify Database Connectivity
+
+1. Create a test project.
+2. Select a database engine.
+3. Enter the database connection information.
+4. Specify the client executable path if necessary.
+5. Click **Save and Test**.
+
+Run read-only queries only after the connection test succeeds.
+
+For the initial test, use a dedicated test account with minimum read permissions. Do not use a production database administrator account.
+
+### Verify Result Exports
+
+If you plan to use the export feature:
+
+1. Select an export directory in the project's delivery settings.
+2. Execute a read-only query.
+3. Confirm that the query result is complete.
+4. Click **Export**.
+5. Verify that XLSX, CSV, and SQL files are generated correctly.
+
+The plugin may reject exports if the result is incomplete, the export directory has not been authorized, or the saved data snapshot has been cleaned up.
+
+After installation, continue with the [User Guide](USAGE.md).
+
+---
+
+## 4. Upgrading the Plugin
+
+Upgrading to a new stable release through DSH's plugin management feature is recommended.
+
+### Before Upgrading
+
+To reduce the risk of data loss, complete the following steps before upgrading:
+
+1. Record the current plugin version.
+2. Back up project configurations and historical query results.
+3. Check the Node.js and DSH compatibility requirements of the new version.
+4. Review the new release's changelog and known limitations.
+
+Plugin data is typically stored in the user's home directory:
 
 ```text
 ~/.dsh/ai-database-assistant/
 ```
 
-具体位置可能因 DSH 配置和运行环境而不同，请以实际数据目录为准。
+The actual location may vary depending on DSH configuration and the runtime environment. Use the actual configured data directory as the source of truth.
 
-**建议在关闭相关插件操作后备份整个数据目录，而不是仅备份单个配置文件。**
+**Back up the entire data directory after stopping relevant plugin operations, rather than backing up individual configuration files only.**
 
-已导出到其他位置的文件，应根据实际需要单独备份。
+Files previously exported to other locations should be backed up separately when necessary.
 
-### 执行升级
+### Performing the Upgrade
 
-通过 DSH 插件管理界面更新插件，按照界面提示完成安装。
+Update the plugin through the DSH plugin management interface and follow the on-screen instructions.
 
-如果使用本地源码目录安装，请替换为目标版本的完整源码，并根据该版本的依赖声明重新安装运行时依赖。
+If you installed the plugin from a local source directory, replace the source with the complete target version and reinstall the runtime dependencies according to that version's dependency declarations.
 
-升级完成后重启 DSH。
+Restart DSH after the upgrade.
 
-### 升级后检查
+### After Upgrading
 
-建议确认：
+Verify that:
 
-- 插件版本显示正确。
-- 现有项目仍可查看。
-- 数据库连接配置正常。
-- 查询结果历史可访问。
-- 保存目录配置仍然有效。
-- 数据库连接测试成功。
-- 查询和导出功能正常。
+- The correct plugin version is displayed.
+- Existing projects are still accessible.
+- Database connection configurations remain intact.
+- Historical query results are accessible.
+- Export directory configurations remain valid.
+- Database connection tests succeed.
+- Query and export features work correctly.
 
-正常升级通常不会主动删除现有项目数据，但建议保留升级前备份，以便发生异常时恢复。
+A normal upgrade generally does not intentionally delete existing project data. However, retaining a pre-upgrade backup is recommended in case recovery becomes necessary.
 
 ---
 
-## 5. 卸载插件
+## 5. Uninstalling the Plugin
 
-卸载插件和删除项目数据是两个不同的操作。
+Uninstalling the plugin and deleting project data are two separate operations.
 
-### 仅卸载插件
+### Uninstalling the Plugin Only
 
-在 DSH 的 Plugins 管理界面中卸载或停用插件，并按照提示重启 DSH。
+Uninstall or disable the plugin through the DSH Plugins management interface, then restart DSH as instructed.
 
-通常情况下，插件卸载不会自动删除项目配置、历史结果及已导出的文件。
+Under normal circumstances, uninstalling the plugin does not automatically remove project configurations, historical query results, or previously exported files.
 
-### 彻底清理项目数据
+### Completely Removing Project Data
 
-如果确认不再需要已有数据，可以在备份后手动清理插件的数据目录。
+If you are certain that existing data is no longer required, you may manually clean up the plugin's data directory after creating a backup.
 
-默认位置通常为：
+The default location is typically:
 
 ```text
 ~/.dsh/ai-database-assistant/
 ```
 
-请先核实目录内容及实际位置，确认没有需要保留的项目配置、历史结果或其他资料。
+Verify the actual directory location and its contents before taking action. Make sure that no project configurations, historical query results, or other files need to be retained.
 
-**警告：手动删除数据目录可能造成不可恢复的数据丢失。请勿在未确认备份的情况下执行。**
-
----
-
-## 6. 版本回退
-
-当新版本存在兼容性问题时，可以考虑回退到此前使用的版本。
-
-但需要注意：**旧版本不一定能够读取新版本保存的数据格式。**
-
-建议按照以下步骤处理：
-
-1. 确认目标版本及其运行环境要求。
-2. 备份当前插件数据目录。
-3. 检查目标版本是否兼容现有配置和数据格式。
-4. 使用 DSH 插件管理功能或对应版本的安装包重新安装。
-5. 重启 DSH。
-6. 检查项目、连接、查询及导出功能。
-
-如果旧版本无法识别现有数据，可以考虑使用升级前备份恢复。
-
-不要在没有备份的情况下直接删除或覆盖当前数据目录。
+**Warning: Manually deleting the data directory may cause irreversible data loss. Do not proceed without verifying your backups.**
 
 ---
 
-## 7. 常见问题
+## 6. Rolling Back to an Earlier Version
 
-### 插件安装后没有出现入口
+If a new release introduces compatibility problems, consider rolling back to a previously used version.
 
-请检查：
+However, **an older version may not be able to read data formats saved by a newer version**.
 
-- 插件是否安装成功。
-- 是否已在 Plugins 中启用。
-- DSH 是否已重启。
-- 插件运行时依赖是否完整。
+The recommended rollback procedure is:
 
-如果仍无法加载，请检查 DSH 的插件加载错误信息。
+1. Identify the target version and its runtime requirements.
+2. Back up the current plugin data directory.
+3. Check whether the target version is compatible with existing configurations and data formats.
+4. Reinstall the target version through DSH plugin management or the corresponding installation package.
+5. Restart DSH.
+6. Verify projects, database connections, queries, and exports.
 
-### 提示找不到数据库客户端
+If the older version cannot recognize the current data, consider restoring a backup created before the upgrade.
 
-MySQL、PostgreSQL、Oracle 和 SQLite 需要相应的外部客户端。
+Do not delete or overwrite the current data directory without a backup.
 
-请确认：
+---
 
-- 客户端已经安装。
-- 客户端可以正常执行。
-- 客户端版本与目标数据库兼容。
-- 系统 `PATH` 正确，或者已填写客户端绝对路径。
+## 7. Troubleshooting
 
-可以在「编辑连接 → 客户端可执行文件」中指定实际路径。
+### The Plugin Does Not Appear After Installation
 
-### MySQL 报错 ERROR 2059：mysql_native_password cannot be loaded
+Check that:
 
-该错误通常与 MySQL 客户端和服务器账号使用的认证插件不兼容有关。
+- The plugin was installed successfully.
+- The plugin is enabled in **Plugins**.
+- DSH has been restarted.
+- All plugin runtime dependencies are installed.
 
-部分较新的 MySQL 客户端已不再提供 `mysql_native_password` 客户端认证插件。如果数据库账号仍使用这种认证方式，就可能出现此错误。
+If the plugin still fails to load, inspect DSH's plugin loading error messages.
 
-建议按以下顺序排查：
+### Database Client Not Found
 
-1. 检查当前实际使用的 `mysql` 客户端版本。
-2. 确认服务器账号采用的认证方式。
-3. 选择与服务器认证方式兼容的客户端。
-4. 在插件连接配置中填写该客户端的绝对路径。
-5. 重新点击「保存并测试」。
+MySQL, PostgreSQL, Oracle, and SQLite require external command-line clients.
 
-对于仍需使用 `mysql_native_password` 的旧环境，可以检查 MySQL 8.4 或其他兼容客户端是否满足要求。
+Verify that:
 
-macOS 可以根据实际 Homebrew 安装情况选择兼容的 `mysql` 客户端。
+- The required client is installed.
+- The client executable works correctly.
+- The client version is compatible with the target database.
+- The system `PATH` is configured correctly, or an absolute executable path has been provided.
 
-Windows 用户可填写对应 `mysql.exe` 的完整路径。
+You can specify the executable path under **Edit Connection → Client Executable**.
 
-**注意：** 不建议仅为消除连接错误而直接修改生产数据库账号的认证方式。任何服务器端调整都应经过兼容性和安全性评估。
+### MySQL ERROR 2059: mysql_native_password Cannot Be Loaded
 
-### SQL Server 提示缺少 tedious 驱动
+This error usually indicates an incompatibility between the MySQL client and the authentication plugin used by the server-side database account.
 
-SQL Server 使用插件的原生 TDS 驱动，不需要安装 `sqlcmd`。
+Some newer MySQL clients no longer provide the `mysql_native_password` client authentication plugin. If the database account still uses this authentication method, the connection may fail with this error.
 
-如果通过本地 ZIP 或源码目录安装，请进入插件目录执行：
+Follow these troubleshooting steps:
+
+1. Check the version of the `mysql` client actually being used.
+2. Identify the authentication method configured for the server-side database account.
+3. Select a client compatible with that authentication method.
+4. Enter the client's absolute executable path in the plugin connection settings.
+5. Click **Save and Test** again.
+
+For legacy environments that still require `mysql_native_password`, check whether a MySQL 8.4 client or another compatible client meets your requirements.
+
+On macOS, you can select a compatible `mysql` client based on your installed Homebrew packages.
+
+On Windows, you can specify the full path to the appropriate `mysql.exe`.
+
+**Important:** Do not change a production database account's authentication method solely to eliminate a connection error. Any server-side modification should undergo compatibility and security assessment.
+
+### SQL Server Reports a Missing tedious Driver
+
+SQL Server uses the plugin's native TDS driver and does not require `sqlcmd`.
+
+If the plugin was installed from a local ZIP or source directory, open a terminal in the plugin directory and run:
 
 ```bash
 npm ci --omit=dev
 ```
 
-随后重启或重新加载 DSH 插件。
+Then restart or reload the DSH plugin.
 
-通过正常 npm 安装的情况下，`tedious` 应作为运行时依赖自动安装。
+When installed normally through npm, `tedious` should be installed automatically as a runtime dependency.
 
-### SQLite 提示找不到 sqlite3
+### SQLite Reports That sqlite3 Is Missing
 
-SQLite 需要本机可执行的 `sqlite3` 命令行客户端。
+SQLite requires an executable `sqlite3` command-line client on the local system.
 
-请确认客户端已安装并可以运行。
+Confirm that the client is installed and can run successfully.
 
-Windows 用户可以在连接设置中填写 `sqlite3.exe` 的绝对路径。
+Windows users can enter the absolute path to `sqlite3.exe` in the connection settings.
 
-### 连接测试失败
+### Database Connection Test Fails
 
-请检查：
+Check the following:
 
-- 数据库服务是否正常。
-- 主机和端口是否正确。
-- 网络和防火墙是否允许连接。
-- 用户名及密码是否正确。
-- 账号是否具备必要的数据库读取权限。
-- 数据库客户端是否兼容。
+- Whether the database service is running normally
+- Whether the host and port are correct
+- Whether network and firewall settings permit connections
+- Whether the username and password are correct
+- Whether the account has the required database read permissions
+- Whether the database client is compatible
 
-**保存数据库连接配置不等于连接测试通过。**
+**Saving a database connection configuration does not mean that the connection test has passed.**
 
-只有成功完成「保存并测试」后，才可以使用相应数据源进行查询。
+The corresponding data source can only be used for queries after **Save and Test** completes successfully.
 
-### 为什么查询结果显示不完整？
+### Why Is My Query Result Incomplete?
 
-当查询达到行数、字节数或其他执行限制时，插件会将结果标记为不完整。
+When a query reaches a row count limit, byte size limit, or another execution restriction, the plugin marks its result as incomplete.
 
-建议缩小时间范围、添加筛选条件或先进行聚合统计。
+Try narrowing the date range, adding filters, or performing aggregation first.
 
-不完整的查询结果不能导出。
+Incomplete query results cannot be exported.
 
-### 为什么无法导出文件？
+### Why Can't I Export Files?
 
-请检查：
+Check that:
 
-- 查询结果是否完整。
-- 项目是否已授权保存目录。
-- 保存目录是否可访问。
-- 历史结果数据是否仍然存在。
-- 目标文件是否存在同名冲突。
-- 当前操作是否符合文件安全限制。
+- The query result is complete.
+- An export directory has been authorized for the project.
+- The export directory is accessible.
+- Historical result data still exists.
+- No conflicting file with the same name prevents the operation.
+- The requested operation complies with file safety restrictions.
 
-### 升级后项目无法正常加载
+### Projects Fail to Load After an Upgrade
 
-先不要删除或重新创建数据目录。
+Do not immediately delete or recreate the data directory.
 
-请检查 DSH 错误信息，并确认是否出现项目配置损坏、数据格式不兼容或权限异常。
+Check DSH error messages and determine whether the problem involves damaged project configurations, incompatible data formats, or abnormal file permissions.
 
-如果提示项目配置损坏，插件可能拒绝进一步读写，以避免覆盖原有数据。
+If project configuration corruption is detected, the plugin may reject further reading or writing to prevent the original data from being overwritten.
 
-请先备份现有文件，再根据错误提示修复或恢复历史备份。
+Back up the existing files before attempting repairs or restoring a historical backup.
 
 ---
 
-## 8. 获取与支持
+## 8. Downloads and Support
 
-**npm 软件包**
+**npm package**
 
 ```text
 @agenius/dsh-ai-database-assistant
 ```
 
-**GitHub 源码与问题反馈**
+**GitHub source code and issue reporting**
 
 https://github.com/agenius666/dsh-ai-database-assistant
 
-如遇到问题，建议提供插件版本、操作系统、DSH 版本、数据库类型、复现步骤及经过脱敏的错误信息。
+When reporting an issue, include the plugin version, operating system, DSH version, database engine, steps to reproduce, and sanitized error messages.
 
-请勿在公开 Issue 中提交数据库密码、API Key、连接凭据或包含敏感数据的完整日志。
+Do not submit database passwords, API keys, connection credentials, or complete logs containing sensitive data in public GitHub Issues.
 
 ---
 
-## 9. 相关文档
+## 9. Related Documentation
 
-- [项目介绍](../README.md)
-- [使用指南](USAGE.md)
-- [数据库支持](DATABASES.md)
-- [插件详情](DETAIL.md)
-- [更新日志](../CHANGELOG.md)
+- [Project Overview](../README.md)
+- [User Guide](USAGE.md)
+- [Database Support](DATABASES.md)
+- [Plugin Details](DETAIL.md)
+- [Changelog](../CHANGELOG.md)
 
-## 10. 许可证
+## 10. License
 
-本项目采用 [Apache License 2.0](../LICENSE) 开源许可。
+This project is licensed under the [Apache License 2.0](../LICENSE).
 
-有关版权及第三方许可证声明，请参阅 [NOTICE](../NOTICE)。
+For copyright information and third-party license notices, see [NOTICE](../NOTICE).
