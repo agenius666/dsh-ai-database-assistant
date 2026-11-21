@@ -1,381 +1,403 @@
-# 数据库支持
+# Database Support
 
-本文介绍 AI 数据库助手（DSH 插件）支持的数据库类型、连接方式、客户端依赖、访问权限及已知限制。
+**English** | [简体中文](DATABASES.zh-CN.md)
 
-**适用版本：** `1.0.3`  
-**支持平台：** Windows、macOS  
-**运行环境：** DeepSeek Harness（DSH）  
-**Node.js：** `>= 22`
+This document describes the database engines supported by AI Database Assistant (DSH Plugin), their connection methods, client dependencies, access permissions, and known limitations.
 
-本版本正式支持五类数据库：**MySQL、PostgreSQL、SQL Server、Oracle 和 SQLite**。其他数据库暂不属于支持范围，Linux 也不在正式支持平台范围内。
+**Applicable version:** `1.0.3`  
+**Supported platforms:** Windows and macOS  
+**Runtime:** DeepSeek Harness (DSH)  
+**Node.js:** `>= 22`
+
+This release officially supports five database engines: **MySQL, PostgreSQL, SQL Server, Oracle, and SQLite**.
+
+Other database engines are not currently supported. Linux is also outside the officially supported platform scope.
 
 ---
 
-## 1. 支持的数据库
+## 1. Supported Databases
 
-| 数据库 | 连接方式 | 默认端口 | 只读机制 |
+| Database | Connection Method | Default Port | Read-Only Mechanism |
 |---|---|---|---|
-| MySQL | `mysql` 命令行客户端 | 3306 | 会话只读 |
-| PostgreSQL | `psql` 命令行客户端 | 5432 | 只读事务 |
-| SQL Server | 内置 `tedious@20.3.9` 驱动 | 1433 | SQL 只读检查 |
-| Oracle | `sqlplus` 命令行客户端 | 1521 | SQL 及客户端命令检查 |
-| SQLite | `sqlite3` 命令行客户端 | — | 只读打开及语句检查 |
+| MySQL | `mysql` command-line client | 3306 | Read-only session |
+| PostgreSQL | `psql` command-line client | 5432 | Read-only transaction |
+| SQL Server | Built-in `tedious@20.3.9` driver | 1433 | Read-only SQL validation |
+| Oracle | `sqlplus` command-line client | 1521 | SQL and client-command validation |
+| SQLite | `sqlite3` command-line client | — | Read-only database access and statement validation |
 
-**连接方式说明：**
+**Connection methods:**
 
-- **MySQL：** 通过本机 `mysql` 客户端连接数据库，支持只读会话。
-- **PostgreSQL：** 通过本机 `psql` 客户端执行只读事务查询。
-- **SQL Server：** 通过插件内置的原生 TDS 驱动连接，无需安装 `sqlcmd`。
-- **Oracle：** 通过本机 `sqlplus` 客户端连接，并对 SQL 语句及客户端命令进行安全检查。
-- **SQLite：** 通过本机 `sqlite3` 客户端以只读方式访问数据库文件。
+- **MySQL:** Connects using the local `mysql` client and supports read-only sessions.
+- **PostgreSQL:** Executes queries in read-only transactions using the local `psql` client.
+- **SQL Server:** Connects through the plugin's built-in native TDS driver without requiring `sqlcmd`.
+- **Oracle:** Connects using the local `sqlplus` client, with safety checks on SQL statements and SQL*Plus commands.
+- **SQLite:** Accesses database files in read-only mode using the local `sqlite3` client.
 
-不同数据库的查询限制和客户端行为可能存在差异。实际可用的表、字段和数据范围还取决于数据库账号权限。
+Query restrictions and client behavior may differ across database engines.
 
----
-
-## 2. 数据库账号与访问权限
-
-AI 数据库助手以只读查询为目标，不提供数据库写入、DDL 或存储过程执行能力。
-
-插件会检查待执行的 SQL，并限制部分可能影响数据库或主机文件的危险操作。
-
-但**应用层只读检查不能代替数据库自身的权限控制**。
-
-### 推荐的账号配置
-
-建议按照最小权限原则配置数据库账号：
-
-1. 为数据分析或审计任务创建独立账号。
-2. 仅授予所需数据库、Schema 和数据表的读取权限。
-3. 优先使用 `SELECT` 权限或数据库提供的相应只读角色。
-4. 不授予 INSERT、UPDATE、DELETE、DDL 等不必要的权限。
-5. 不授予文件读写、数据库管理、备份恢复等高权限。
-6. 根据组织安全要求，启用适当的数据库访问审计和日志记录。
-
-对于生产数据库，建议由数据库管理员根据实际业务需求分配访问权限。
-
-**不建议直接使用数据库管理员账号连接插件。**
+The tables, columns, and data accessible to the plugin also depend on the permissions assigned to the database account.
 
 ---
 
-## 3. 数据库客户端要求
+## 2. Database Accounts and Access Permissions
 
-### 客户端依赖
+AI Database Assistant is designed for read-only queries. It does not provide database write operations, DDL, or stored procedure execution.
 
-MySQL、PostgreSQL、Oracle 和 SQLite 需要在运行 DSH Host 的设备上安装对应的命令行客户端。
+The plugin validates SQL statements before execution and restricts certain potentially dangerous operations that could affect databases or host files.
 
-| 数据库 | 可执行程序 | 是否需要单独安装 |
+However, **application-level read-only validation does not replace database-enforced access controls**.
+
+### Recommended Account Configuration
+
+Follow the principle of least privilege when configuring database accounts:
+
+1. Create a dedicated account for data analysis or auditing.
+2. Grant read permissions only to the required databases, schemas, and tables.
+3. Prefer `SELECT` privileges or the equivalent database-provided read-only roles.
+4. Avoid granting unnecessary INSERT, UPDATE, DELETE, or DDL permissions.
+5. Do not grant elevated permissions for file operations, database administration, backup, or recovery.
+6. Enable appropriate database access auditing and logging according to organizational security requirements.
+
+For production databases, a database administrator should assign permissions based on actual business requirements.
+
+**Do not connect the plugin directly using a database administrator account.**
+
+---
+
+## 3. Database Client Requirements
+
+### Client Dependencies
+
+MySQL, PostgreSQL, Oracle, and SQLite require their corresponding command-line clients to be installed on the device running the DSH Host.
+
+| Database | Executable | Separate Installation Required |
 |---|---|---|
-| MySQL | `mysql` / `mysql.exe` | 是 |
-| PostgreSQL | `psql` / `psql.exe` | 是 |
-| SQL Server | 内置 `tedious` 驱动 | 否 |
-| Oracle | `sqlplus` / `sqlplus.exe` | 是 |
-| SQLite | `sqlite3` / `sqlite3.exe` | 是 |
+| MySQL | `mysql` / `mysql.exe` | Yes |
+| PostgreSQL | `psql` / `psql.exe` | Yes |
+| SQL Server | Built-in `tedious` driver | No |
+| Oracle | `sqlplus` / `sqlplus.exe` | Yes |
+| SQLite | `sqlite3` / `sqlite3.exe` | Yes |
 
-SQL Server 使用 `tedious@20.3.9` 原生 TDS 驱动，要求 Node.js `>= 22`。
+SQL Server uses the native TDS driver `tedious@20.3.9`, which requires Node.js `>= 22`.
 
-通过 npm 正常安装插件时，该驱动作为运行时依赖自动安装。
+When the plugin is installed normally through npm, this driver is installed automatically as a runtime dependency.
 
-如果使用本地源码 ZIP 或源码目录，请先在插件目录执行：
+If you install the plugin from a local source ZIP or source directory, first run the following command inside the plugin directory:
 
 ```bash
 npm ci --omit=dev
 ```
 
-详细步骤请参阅 [安装与升级指南](INSTALL.md)。
+For detailed instructions, see the [Installation and Upgrade Guide](INSTALL.md).
 
-### 指定客户端路径
+### Specifying a Client Executable Path
 
-插件支持两种客户端查找方式：
+The plugin supports two ways to locate database clients:
 
-- **自动查找：** 客户端路径留空，插件从系统 `PATH` 中查找。
-- **手动指定：** 在「编辑连接 → 客户端可执行文件」中填写程序的绝对路径。
+- **Automatic discovery:** Leave the client executable path empty. The plugin searches the system `PATH`.
+- **Manual configuration:** Specify the absolute executable path under **Edit Connection → Client Executable**.
 
-例如，macOS 上可以填写：
+For example, on macOS:
 
 ```text
 /opt/homebrew/bin/mysql
 ```
 
-Windows 上可以填写：
+On Windows:
 
 ```text
 C:\Program Files\MySQL\MySQL Server 8.4\bin\mysql.exe
 ```
 
-以上路径仅为示例，实际位置取决于安装方式和系统配置。
+These are example paths. The actual locations depend on your installation method and system configuration.
 
-如果本机同时安装了多个数据库客户端版本，建议明确指定需要使用的版本，避免因 `PATH` 顺序导致连接到不兼容的客户端。
+If multiple versions of a database client are installed, specifying the intended version explicitly is recommended. This helps avoid incompatibilities caused by the order of directories in `PATH`.
 
 ---
 
-## 4. 各数据库连接说明
+## 4. Database-Specific Connection Details
 
 ### MySQL
 
-MySQL 使用本机 `mysql` 命令行客户端连接数据库。
+MySQL connections use the local `mysql` command-line client.
 
-添加连接时，通常需要提供主机、端口、用户名、密码及数据库名称。
+A typical connection requires:
 
-**认证兼容性**
+- Host
+- Port
+- Username
+- Password
+- Database name
 
-不同 MySQL 客户端版本对认证插件的支持可能不同。
+**Authentication compatibility**
 
-如果出现以下错误：
+Different MySQL client versions may support different authentication plugins.
+
+For example, you may encounter:
 
 ```text
 ERROR 2059 (HY000): Authentication plugin 'mysql_native_password' cannot be loaded
 ```
 
-通常意味着当前客户端无法加载服务器账号所使用的认证插件。
+This usually means that the current client cannot load the authentication plugin used by the server-side database account.
 
-较新的 MySQL 客户端可能不再提供 `mysql_native_password` 支持，而部分旧版数据库账号仍使用该认证方式。
+Some newer MySQL clients no longer provide support for `mysql_native_password`, while certain older database accounts still use this authentication method.
 
-建议：
+Recommended troubleshooting steps:
 
-1. 确认当前实际使用的 MySQL 客户端版本。
-2. 检查服务器账号使用的认证插件。
-3. 选择与服务器认证方式兼容的客户端。
-4. 在插件连接配置中指定该客户端的绝对路径。
-5. 重新点击「保存并测试」。
+1. Identify the version of the MySQL client actually being used.
+2. Check the authentication plugin configured for the server-side account.
+3. Select a client compatible with the server's authentication method.
+4. Specify that client's absolute executable path in the plugin connection settings.
+5. Click **Save and Test** again.
 
-对于仍使用 `mysql_native_password` 的环境，可以检查 MySQL 8.4 或其他兼容客户端是否满足连接要求。
+For environments that still use `mysql_native_password`, check whether MySQL 8.4 or another compatible client meets the connection requirements.
 
-macOS 使用 Homebrew 时，可以根据可用软件包安装兼容客户端，例如：
+On macOS, you may be able to install a compatible client through Homebrew, depending on package availability:
 
 ```bash
 brew install mysql-client@8.4
 ```
 
-其可执行文件路径可能为：
+The executable path may be:
 
 ```text
 /opt/homebrew/opt/mysql-client@8.4/bin/mysql
 ```
 
-Windows 用户可安装兼容版本的 MySQL 客户端，并填写对应 `mysql.exe` 的完整路径。
+Windows users can install a compatible MySQL client and specify the full path to the corresponding `mysql.exe`.
 
-**注意：** 不建议仅为解决客户端兼容问题而直接调整生产数据库账号的认证方式。服务器端的认证变更应经过安全和兼容性评估。
+**Important:** Do not modify the authentication method of a production database account solely to resolve client compatibility issues. Server-side authentication changes should undergo appropriate security and compatibility assessments.
 
 ### PostgreSQL
 
-PostgreSQL 使用本机 `psql` 命令行客户端执行只读查询。
+PostgreSQL uses the local `psql` command-line client to execute read-only queries.
 
-连接时通常需要提供：
+Typical connection information includes:
 
-- 主机和端口
-- 数据库名称
-- 用户名及密码
-- Schema（按需填写）
+- Host and port
+- Database name
+- Username and password
+- Schema, when required
 
-插件使用只读事务限制查询操作。
+The plugin uses read-only transactions to restrict query operations.
 
-建议为分析任务单独授予目标 Schema 和数据表的读取权限，避免直接使用高权限账号。
+For analysis tasks, grant read permissions only to the required schemas and tables. Avoid using privileged database accounts.
 
 ### SQL Server
 
-SQL Server 通过插件内置的 `tedious@20.3.9` 驱动建立原生 TDS 连接。
+SQL Server connections use the plugin's built-in `tedious@20.3.9` native TDS driver.
 
-**无需安装 SQL Server 命令行工具 `sqlcmd`。**
+**The SQL Server command-line tool `sqlcmd` is not required.**
 
-主要特点：
+Key capabilities include:
 
-- 支持原生 SQL Server 连接。
-- 支持 NULL 与空字符串区分。
-- 支持高精度数值读取。
-- 对 SQL 语句执行只读安全检查。
-- 支持配置服务器证书信任选项。
+- Native SQL Server connectivity
+- Distinguishing NULL values from empty strings
+- Support for high-precision numeric values
+- Read-only SQL validation
+- Configurable server certificate trust settings
 
-**服务器证书**
+**Server certificates**
 
-如果数据库使用自签名证书，连接配置中可能需要使用「信任服务器证书」选项。
+If the database uses a self-signed certificate, you may need to configure the **Trust Server Certificate** option.
 
-启用该选项可能降低证书身份验证的严格程度。建议优先使用有效证书，并在确认服务器身份和安全风险后再决定是否启用。
+Enabling this option may reduce the strictness of server certificate identity verification.
 
-**金额与高精度数值**
+Prefer valid certificates whenever possible. Enable this option only after verifying the server's identity and assessing the associated security risks.
 
-插件会尽可能保留 `MONEY`、`SMALLMONEY` 和高精度 `DECIMAL` 类型的数值精度，避免通过普通浮点数转换造成金额误差。
+**Monetary and high-precision numeric values**
 
-**时间精度**
+The plugin attempts to preserve the numeric precision of `MONEY`, `SMALLMONEY`, and high-precision `DECIMAL` values.
 
-对于 `datetime2`、`time`、`datetimeoffset` 等类型，当前驱动读取的小数秒可能只保留到毫秒精度。
+This helps avoid monetary rounding errors caused by conversion through ordinary floating-point numbers.
 
-如需保留更高精度，建议在 SQL 查询中将相关字段转换为文本。
+**Date and time precision**
+
+For SQL Server data types such as `datetime2`, `time`, and `datetimeoffset`, the current driver may preserve fractional seconds only to millisecond precision.
+
+If higher precision is required, convert the relevant date or time columns to text within the SQL query.
 
 ### Oracle
 
-Oracle 使用本机 `sqlplus` 命令行客户端建立连接。
+Oracle connections use the local `sqlplus` command-line client.
 
-连接时需要根据数据库环境提供相应的连接信息及账号凭据。
+Provide the appropriate database connection information and account credentials according to your Oracle environment.
 
-插件对 SQL 语句和 SQL*Plus 客户端命令进行检查，以限制非只读操作及危险指令。
+The plugin validates SQL statements and SQL*Plus client commands to restrict non-read-only operations and potentially dangerous commands.
 
-**密码特殊字符**
+**Special characters in passwords**
 
-插件会按照 SQL*Plus 连接规则处理密码中的特殊字符，例如：
+The plugin handles special characters in passwords according to SQL*Plus connection rules, including:
 
 - `@`
 - `/`
-- 空格
-- 引号
+- Spaces
+- Quotation marks
 
-正常情况下，无需用户自行转义这些字符。
+Under normal circumstances, users do not need to escape these characters manually.
 
-如果仍无法连接，建议先使用相同账号通过 `sqlplus` 验证账号、网络和服务连接信息，再返回插件重新测试。
+If the connection still fails, first verify the account, network connectivity, and service connection details directly with `sqlplus` using the same credentials.
 
-建议使用专用只读账号，并仅授予所需业务表的读取权限。
+Then return to the plugin and run the connection test again.
+
+A dedicated read-only account with access only to the required business tables is recommended.
 
 ### SQLite
 
-SQLite 使用本机 `sqlite3` 命令行客户端读取数据库文件。
+SQLite connections use the local `sqlite3` command-line client to read database files.
 
-与其他数据库不同，SQLite 不需要填写远程数据库主机和端口，主要配置数据库文件路径。
+Unlike network database engines, SQLite does not require a remote host or port.
 
-插件会以只读方式打开数据库文件，并限制可能访问或修改主机文件的相关操作。
+The primary connection setting is the database file path.
 
-**Windows 特别说明**
+The plugin opens the database file in read-only mode and restricts operations that could access or modify host files.
 
-Windows 不一定预装 `sqlite3.exe`。
+**Windows-specific considerations**
 
-使用前请安装可信来源的 SQLite 命令行客户端，并确认程序可以正常执行。
+Windows does not necessarily include `sqlite3.exe` by default.
 
-如果客户端没有加入系统 `PATH`，可在插件连接设置中填写 `sqlite3.exe` 的绝对路径。
+Before using SQLite, install the SQLite command-line client from a trusted source and verify that the executable runs correctly.
 
-数据库文件还需要对当前运行用户具有相应的读取权限。
+If the client is not available through the system `PATH`, specify the absolute path to `sqlite3.exe` in the plugin connection settings.
 
----
-
-## 5. 连接测试
-
-添加或修改数据库连接后，请点击 **「保存并测试」**。
-
-连接测试会根据数据库类型检查相关条件，包括：
-
-- 客户端或驱动是否可用。
-- 主机、端口及数据库连接信息是否正确。
-- 网络是否能够访问数据库。
-- 账号认证是否成功。
-- 是否具备必要的查询权限。
-
-只有连接测试通过后，数据源才会显示为「可用」，并允许后续查询。
-
-**保存连接配置不等于连接测试成功。**
-
-如果测试失败，请先根据界面错误信息排查，并确认数据库客户端、认证信息和访问权限。
+The current operating system user must also have appropriate read permissions for the database file.
 
 ---
 
-## 6. 查询与数据安全限制
+## 5. Connection Testing
 
-为了降低误操作和资源占用风险，插件对查询执行和结果处理设置了必要限制。
+After adding or modifying a database connection, click **Save and Test**.
 
-### 只读查询
+Depending on the database engine, the connection test checks conditions including:
 
-插件限制写入、DDL、存储过程及其他不符合只读要求的操作。
+- Availability of the required client or driver
+- Correctness of host, port, and database connection information
+- Network connectivity to the database
+- Successful account authentication
+- Availability of the necessary query permissions
 
-不同数据库的只读实现可能有所差异，但均应配合数据库侧最小权限账号使用。
+Only connections that pass the test are marked as **Available** and permitted for subsequent queries.
 
-### 查询资源限制
+**Saving a connection configuration does not mean the connection test has succeeded.**
 
-插件对以下资源设置限制：
-
-- 查询执行时间。
-- 结果行数。
-- 查询输出字节数。
-
-达到相应限制时，查询结果可能被标记为不完整。
-
-**不完整或被截断的结果不能直接导出。**
-
-对于大规模查询，建议缩小时间范围、增加过滤条件，或先通过 SQL 完成分组聚合。
-
-### 文件导出
-
-插件支持 XLSX、CSV 和 SQL 三种导出格式。
-
-文件导出受到以下限制：
-
-- 只能写入项目授权的保存目录。
-- 默认不覆盖已有同名文件。
-- 覆盖已有文件需要明确确认。
-- 不完整结果不能导出。
-- 已清理的历史结果不能直接重新导出。
+If a test fails, review the displayed error message and verify the database client, authentication details, and access permissions.
 
 ---
 
-## 7. 已知限制
+## 6. Query and Data Safety Restrictions
 
-| 项目 | 说明 | 建议 |
+To reduce accidental operations and excessive resource usage, the plugin applies restrictions to query execution and result processing.
+
+### Read-Only Queries
+
+The plugin restricts database writes, DDL, stored procedures, and other operations that do not meet its read-only requirements.
+
+Read-only enforcement mechanisms differ between database engines, but all connections should use database accounts with minimum necessary permissions.
+
+### Query Resource Limits
+
+The plugin enforces limits on:
+
+- Query execution time
+- Result row counts
+- Query output size in bytes
+
+When a query reaches one of these limits, its result may be marked as incomplete.
+
+**Incomplete or truncated query results cannot be exported directly.**
+
+For large queries, narrow the date range, add filters, or perform grouping and aggregation in SQL before retrieving detailed data.
+
+### File Exports
+
+The plugin supports XLSX, CSV, and SQL export formats.
+
+File exports are subject to the following restrictions:
+
+- Files can only be written to directories authorized for the project.
+- Existing files with the same name are not overwritten by default.
+- Overwriting an existing file requires explicit confirmation.
+- Incomplete results cannot be exported.
+- Historical results that have been cleaned up cannot be exported again directly.
+
+---
+
+## 7. Known Limitations
+
+| Area | Limitation | Recommendation |
 |---|---|---|
-| SQL Server 时间精度 | 部分高精度时间类型的小数秒可能仅保留到毫秒 | 在 SQL 中转换为文本 |
-| 空结果集列名 | 部分复杂查询无法可靠恢复结果列名 | 明确指定查询字段或调整查询结构 |
-| 大规模查询 | 超过行数、字节数或执行限制时，结果会被标记为不完整 | 缩小范围或先聚合 |
-| 数据库客户端 | 客户端版本可能与服务器认证方式或协议不兼容 | 使用兼容版本并指定路径 |
-| Oracle 特殊字符密码 | 特殊字符通常由插件自动处理，但仍可能受客户端及连接环境影响 | 使用 SQL*Plus 验证连接 |
-| Windows 文件路径 | 网络共享、权限、路径格式及文件系统规则可能影响访问 | 检查目标目录及系统权限 |
-| 文件导出 | 只能导出完整结果，且必须设置有效保存目录 | 检查完整性及目录配置 |
-| 平台支持 | 当前仅正式支持 Windows、macOS | 使用已验证的 DSH Host 环境 |
+| SQL Server time precision | Fractional seconds of some high-precision time types may be preserved only to milliseconds | Convert the value to text in SQL |
+| Empty result set column names | Some complex queries do not allow reliable recovery of result column names | Explicitly select columns or adjust query structure |
+| Large queries | Results exceeding row count, byte size, or execution limits are marked as incomplete | Narrow the query scope or aggregate first |
+| Database clients | Client versions may be incompatible with server authentication methods or protocols | Use compatible client versions and configure executable paths |
+| Oracle passwords with special characters | The plugin normally handles special characters, but behavior may still depend on the client and connection environment | Verify the connection using SQL*Plus |
+| Windows file paths | Network shares, permissions, path formats, and filesystem rules may affect access | Check destination directories and operating system permissions |
+| File exports | Only complete results can be exported, and a valid export directory is required | Check result completeness and directory settings |
+| Platform support | Only Windows and macOS are officially supported | Use a verified DSH Host environment |
 
-**关于空结果集：**
+**About empty result sets**
 
-对于能够可靠确定列名的简单查询，插件可以根据表结构补充结果列名。
+For simple queries where column names can be determined reliably, the plugin may recover the result column names from the database schema.
 
-如果联合查询、表达式等复杂查询无法可靠确定列名，插件可能拒绝导出，以避免生成缺少有效表头的文件。
+For complex queries involving joins, expressions, or similar structures where column names cannot be reliably determined, the plugin may reject exports to avoid generating files without valid column headers.
 
-**关于查询准确性：**
+**About query accuracy**
 
-AI 生成的 SQL 和分析结果可能受到数据库结构、数据质量、权限及业务口径的影响。
+AI-generated SQL and analysis results may be affected by database schemas, data quality, account permissions, and business definitions.
 
-对于重要的财务数据、审计结论或业务统计，建议对查询条件、关联关系和统计结果进行人工复核。
-
----
-
-## 8. 常见问题
-
-### 找不到数据库客户端怎么办？
-
-先确认客户端已经安装。
-
-如果系统 `PATH` 中找不到对应程序，可以在「编辑连接 → 客户端可执行文件」中填写完整路径。
-
-SQL Server 不需要单独安装 `sqlcmd`。
-
-### 数据库连接成功，但 AI 无法查看某些表？
-
-可能是当前账号没有目标 Schema 或数据表的读取权限，也可能是数据库结构信息不可见。
-
-建议检查账号权限、数据库名称及 Schema 配置。
-
-不要为解决问题而直接授予管理员权限。
-
-### 为什么 SQL Server 的时间值精度不一致？
-
-部分高精度时间类型通过当前驱动读取时，可能只保留到毫秒精度。
-
-如果需要完整的小数秒精度，可以在查询中将时间字段转换为文本。
-
-### 为什么查询结果无法导出？
-
-请确认：
-
-1. 查询结果是否完整。
-2. 是否已配置并授权保存目录。
-3. 结果数据是否仍然存在。
-4. 保存目录是否具有写入权限。
-5. 是否存在同名文件或其他文件操作限制。
-
-### 为什么建议使用只读账号？
-
-即使插件已经限制非只读 SQL，数据库权限仍是重要的安全保障。
-
-使用最小权限账号可以降低异常查询、配置错误或其他问题可能产生的影响。
+For important financial data, audit conclusions, or business statistics, manually review query conditions, table relationships, and statistical results.
 
 ---
 
-## 9. 相关文档
+## 8. Frequently Asked Questions
 
-- [项目介绍](../README.md)
-- [安装与升级](INSTALL.md)
-- [使用指南](USAGE.md)
-- [插件详情](DETAIL.md)
-- [更新日志](../CHANGELOG.md)
+### What Should I Do If a Database Client Cannot Be Found?
+
+First, confirm that the required client is installed.
+
+If the executable cannot be found through the system `PATH`, specify its full path under **Edit Connection → Client Executable**.
+
+SQL Server does not require a separate installation of `sqlcmd`.
+
+### Why Can AI Not Access Certain Tables Even Though the Database Connection Succeeds?
+
+The current account may lack read permissions for the target schema or tables.
+
+Alternatively, the relevant database schema information may not be visible to the account.
+
+Review the account permissions, database name, and schema configuration.
+
+Do not grant administrator privileges solely to resolve this issue.
+
+### Why Does SQL Server Return Date and Time Values With Different Precision?
+
+When some high-precision date and time types are retrieved through the current driver, fractional seconds may be preserved only to millisecond precision.
+
+If full fractional-second precision is required, convert the relevant date or time columns to text in the SQL query.
+
+### Why Can't Query Results Be Exported?
+
+Check the following:
+
+1. Is the query result complete?
+2. Has a valid export directory been configured and authorized?
+3. Does the saved result data still exist?
+4. Does the export directory have the necessary write permissions?
+5. Are there filename conflicts or other file operation restrictions?
+
+### Why Is a Read-Only Database Account Recommended?
+
+Even when the plugin restricts non-read-only SQL statements, database-level permissions remain an important security safeguard.
+
+Using an account with minimum necessary permissions reduces the potential impact of unexpected queries, configuration mistakes, or other issues.
+
+---
+
+## 9. Related Documentation
+
+- [Project Overview](../README.md)
+- [Installation and Upgrade](INSTALL.md)
+- [User Guide](USAGE.md)
+- [Plugin Details](DETAIL.md)
+- [Changelog](../CHANGELOG.md)
