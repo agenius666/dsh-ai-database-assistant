@@ -1,443 +1,457 @@
-# AI 数据库助手（DSH 插件）
+# AI Database Assistant (DSH Plugin)
 
-**用自然语言查询数据库，让 AI 帮你完成数据探索、分析与导出。**
+**Query databases using natural language, with AI-assisted data exploration, analysis, and export.**
 
-AI 数据库助手是一款基于 DeepSeek Harness（DSH）的数据库分析插件。你可以直接描述需求，让 AI 查看数据库结构、生成并执行只读 SQL、解释查询结果，并将结果导出为 XLSX、CSV 和 SQL 文件。
+**English** | [简体中文](README.zh-CN.md)
 
-支持 **MySQL、PostgreSQL、SQL Server、Oracle、SQLite** 五类数据库。
+AI Database Assistant is a database analysis plugin for DeepSeek Harness (DSH). Describe your requirements in natural language and let AI explore database schemas, generate and execute read-only SQL queries, explain query results, and export data to XLSX, CSV, and SQL files.
 
-> **当前版本：** 1.0.3  
-> **支持平台：** Windows、macOS  
-> **运行环境：** DeepSeek Harness（DSH）  
-> **Node.js：** >= 22  
-> **访问方式：** 只读查询，不提供数据库写入功能。
+The plugin supports **MySQL, PostgreSQL, SQL Server, Oracle, and SQLite**.
 
-本项目是 DSH 插件，需要在 DeepSeek Harness 中使用，并非独立的数据库客户端。Linux 暂不属于正式支持范围。
+> **Current version:** 1.0.3  
+> **Supported platforms:** Windows and macOS  
+> **Runtime:** DeepSeek Harness (DSH)  
+> **Node.js:** 22 or later  
+> **Database access:** Read-only queries; database write operations are not supported.
+
+This project is a DSH plugin, not a standalone database client. Linux is not currently an officially supported platform.
 
 ---
 
-## 主要功能
+## Key Features
 
-### 自然语言查询
+### Natural-Language Queries
 
-无需提前编写 SQL，直接使用日常语言描述分析需求，例如：
+You do not need to write SQL in advance. Simply describe your analysis requirements in everyday language, for example:
 
-- “统计上个月各数据库备份失败的次数。”
-- “找出员工离职后仍处于启用状态的系统账号。”
-- “按月份汇总订单数量和销售金额。”
+- "Count database backup failures during the previous month."
+- "Find system accounts that remain enabled after the associated employees have left."
+- "Summarize order counts and sales amounts by month."
 
-AI 可以根据当前项目中可访问的数据库结构，辅助生成、执行和解释查询。
+AI can use the database schemas accessible within the current project to help generate, execute, and explain queries.
 
-### 自动探索数据库
+### Automatic Database Exploration
 
-AI 可以通过插件提供的工具查看数据库中的表、字段及相关结构信息，再根据用户需求构建查询。
+AI can use the plugin's tools to inspect database tables, columns, and other structural information before constructing queries based on your requirements.
 
-当业务口径不明确时，例如时间范围、状态定义或金额计算方式，AI 可以进一步询问，帮助明确查询条件。
+When business definitions are unclear, such as date ranges, status definitions, or calculation methods, AI can ask follow-up questions to clarify the query conditions.
 
-### 查询结果管理
+### Query Result Management
 
-每次最终查询均可保存为独立结果，支持查看：
+Each final query can be saved as an individual result. You can review:
 
-- 实际执行的 SQL
-- 查询结果与前 20 行预览
-- 查询行数及字段信息
-- 执行耗时
-- 结果完整性状态
+- The SQL statement actually executed
+- Query results and a preview of the first 20 rows
+- Row counts and column information
+- Query execution time
+- Result completeness status
 
-历史结果可在项目中查看，便于后续分析和复核。
+Historical query results remain available within the project for subsequent analysis and review.
 
-### XLSX、CSV、SQL 导出
+### XLSX, CSV, and SQL Export
 
-同一份完整查询结果可以一次导出三种文件：
+A single complete query result can be exported into three file formats:
 
-| 格式 | 用途 |
+| Format | Purpose |
 |---|---|
-| XLSX | Excel 数据分析、整理和交付 |
-| CSV | 数据交换、导入其他系统 |
-| SQL | 保存实际执行的查询语句，便于复核或重新执行 |
+| XLSX | Analysis, organization, and delivery using Excel |
+| CSV | Data exchange and import into other systems |
+| SQL | Preservation of the executed query for review or re-execution |
 
-SQL 文件保存的是查询语句，而不是数据库数据的完整快照。重新执行时，结果可能因数据库内容、权限或运行环境变化而不同。
+The SQL file contains the executed query statement, not a complete snapshot of the underlying database data. Re-executing the query may produce different results if the database contents, permissions, or environment have changed.
 
-### AI 辅助排查
+### AI-Assisted Troubleshooting
 
-连接或操作失败时，可以使用错误提示旁的 **「询问 AI」** 功能，将相关项目上下文和错误信息带入会话，辅助分析原因。
+When a connection or operation fails, use the **Ask AI** option beside the error message to bring relevant project context and error information into a conversation for AI-assisted troubleshooting.
 
-### 多语言界面
+### Multilingual Interface
 
-支持跟随 DSH 语言设置切换界面，提供以下十种语言：
+The plugin follows the language settings of DSH and provides an interface in **10 languages**:
 
-简体中文、繁体中文、English、日本語、한국어、Español、Français、Deutsch、Русский、Português。
+- Simplified Chinese (简体中文)
+- Traditional Chinese (繁體中文)
+- English
+- Japanese (日本語)
+- Korean (한국어)
+- Spanish (Español)
+- French (Français)
+- German (Deutsch)
+- Russian (Русский)
+- Portuguese (Português)
 
-### 只读查询与安全控制
+### Read-Only Queries and Safety Controls
 
-插件提供只读 SQL 检查及查询资源限制，包括：
+The plugin provides read-only SQL validation and query resource limits, including:
 
-- 限制写入类 SQL 操作
-- 控制查询执行时间
-- 限制结果行数与输出大小
-- 标记不完整或被截断的结果
-- 禁止导出不完整的结果
-- 限制文件导出到用户授权的目录
+- Restrictions on SQL statements that modify data
+- Query execution time limits
+- Result row count and output size limits
+- Detection of incomplete or truncated results
+- Prevention of exports from incomplete results
+- Restrictions on file exports to user-authorized directories
 
-**建议始终使用独立的数据库只读账号，并仅授予必要的查询权限。** 插件的只读检查不能替代数据库自身的权限控制。
-
----
-
-## 工作方式
-
-AI 数据库助手通过 DSH 会话与插件工作台协同运行。
-
-1. 在工作台中创建项目并配置数据库连接。
-2. 在工作台发起提问，或使用已绑定项目的 AI 数据库助手会话。
-3. AI 根据需求查看可访问的表和字段。
-4. AI 生成并执行符合限制的只读 SQL。
-5. 插件保存最终查询结果及相关信息。
-6. 用户查看结果，并按需导出完整数据。
-
-从工作台发起提问时，插件会自动创建或切换至对应的助手会话，并关联当前项目。
-
-如果手动创建了「AI 数据库助手」会话，请先在左侧工作台选择项目，再向 AI 提问。
+**Always use a dedicated database account with the minimum necessary read-only permissions.** Application-level SQL validation is not a substitute for database-enforced permissions.
 
 ---
 
-## 适用场景
+## How It Works
 
-| 场景 | 示例 |
+AI Database Assistant operates through DSH conversations and the plugin workspace.
+
+1. Create a project and configure database connections in the workspace.
+2. Ask a question from the workspace or use an AI Database Assistant conversation associated with the project.
+3. AI explores accessible tables and columns based on your request.
+4. AI generates and executes read-only SQL that complies with the plugin's restrictions.
+5. The plugin saves the final query result and related metadata.
+6. Review the result and export complete data when needed.
+
+When you start a question from the workspace, the plugin automatically creates or switches to the appropriate assistant conversation and associates it with the current project.
+
+If you create an AI Database Assistant conversation manually, select the relevant project in the left workspace before asking questions.
+
+---
+
+## Use Cases
+
+| Use Case | Example |
 |---|---|
-| 运营分析 | 按月份、区域或渠道统计业务指标 |
-| 财务分析 | 汇总收入、成本、费用及相关明细 |
-| 数据核对 | 比较不同数据表或系统中的记录差异 |
-| IT 审计 | 查询账号权限、操作日志及异常记录 |
-| 故障排查 | 分析任务执行状态、错误日志和失败原因 |
-| 数据探索 | 快速了解陌生数据库的表结构及数据分布 |
-| 结果交付 | 导出 Excel 数据及可复核的 SQL 查询语句 |
+| Operations analysis | Analyze business metrics by month, region, or channel |
+| Financial analysis | Summarize revenue, costs, expenses, and transaction details |
+| Data reconciliation | Compare records across database tables or systems |
+| IT auditing | Examine account permissions, operation logs, and anomalies |
+| Troubleshooting | Analyze task execution states, error logs, and failures |
+| Data exploration | Understand the structure and contents of unfamiliar databases |
+| Result delivery | Export Excel data and reproducible SQL query statements |
 
 ---
 
-## 安装
+## Installation
 
-### 方式一：通过 DSH 安装（推荐）
+### Option 1: Install Through DSH (Recommended)
 
-在 DeepSeek Harness 中打开：
+In DeepSeek Harness, open:
 
 **Plugins → Add plugin**
 
-输入 npm 包名：
+Enter the npm package name:
 
 ```text
 @agenius/dsh-ai-database-assistant
 ```
 
-按提示完成安装并启用插件，然后重启 DSH。
+Follow the instructions to install and enable the plugin, then restart DSH.
 
-安装成功后，左侧栏将显示「AI 数据库助手」，新建会话时也可以选择对应的助手预设。
+Once installed, **AI Database Assistant** appears in the left sidebar and becomes available as an assistant preset when creating a new conversation.
 
-### 方式二：使用 npm 安装
+### Option 2: Install Using npm
 
 ```bash
 npm install @agenius/dsh-ai-database-assistant
 ```
 
-此命令会安装 npm 软件包及其运行时依赖，包括 SQL Server 使用的 `tedious` 驱动。
+This command installs the npm package and its runtime dependencies, including the `tedious` driver used for SQL Server.
 
-需要注意，**npm 安装并不等于自动注册 DSH 插件**。仍需在 DSH 的插件管理界面中添加并启用。
+**Installing the package with npm does not automatically register it as a DSH plugin.** You must still add and enable the plugin through the DSH plugin management interface.
 
-### 方式三：使用本地 ZIP 或源码目录安装
+### Option 3: Install From a Local ZIP or Source Directory
 
-如果使用下载的源码 ZIP 或本地源码目录，请先解压，并在插件目录中安装运行时依赖：
+If you downloaded a source ZIP or are using a local source directory, extract the files and install the runtime dependencies inside the plugin directory:
 
 ```bash
 cd /path/to/dsh-ai-database-assistant
 npm ci --omit=dev
 ```
 
-如果源码目录不包含 `package-lock.json`，可以使用：
+If the source directory does not contain `package-lock.json`, use:
 
 ```bash
 npm install --omit=dev
 ```
 
-完成后，在 **Plugins → Add plugin** 中选择对应的本地目录并启用插件。
+Then select the local directory through **Plugins → Add plugin** and enable the plugin.
 
-**注意：** 源码 ZIP 不包含 `node_modules`。未安装运行时依赖可能导致部分数据库驱动无法加载，例如 SQL Server 提示缺少 `tedious`。
+**Note:** Source ZIP archives do not include `node_modules`. Missing runtime dependencies may prevent database drivers from loading, including the `tedious` driver required for SQL Server.
 
-详细说明参见 [安装指南](docs/INSTALL.md)。
+For more information, see the [Installation Guide](docs/INSTALL.md).
 
 ---
 
-## 系统要求
+## System Requirements
 
-| 项目 | 要求 |
+| Component | Requirement |
 |---|---|
-| 操作系统 | Windows、macOS |
-| DSH 版本 | >= 0.2.2-rc.1 |
-| Node.js | >= 22 |
-| 数据库连接 | 可访问目标数据库，并具备必要的读取权限 |
-| 外部客户端 | 根据数据库类型安装对应客户端 |
+| Operating system | Windows or macOS |
+| DSH version | 0.2.2-rc.1 or later |
+| Node.js | 22 or later |
+| Database connectivity | Access to the target database with appropriate read permissions |
+| External clients | Required according to the selected database engine |
 
-在已验证的 Windows、macOS DSH Host 环境中，Node.js 为 24.21.0，通常无需另外安装。
+In verified Windows and macOS DSH Host environments, Node.js version 24.21.0 was available, typically without requiring a separate installation.
 
-### 数据库支持
+### Supported Databases
 
-| 数据库 | 连接方式 | 默认端口 | 查询限制 |
+| Database | Connection Method | Default Port | Query Restrictions |
 |---|---|---|---|
-| MySQL | `mysql` 命令行客户端 | 3306 | 会话只读 |
-| PostgreSQL | `psql` 命令行客户端 | 5432 | 只读事务 |
-| SQL Server | 内置 `tedious` 原生 TDS 驱动 | 1433 | SQL 只读检查 |
-| Oracle | `sqlplus` 命令行客户端 | 1521 | SQL 及客户端命令检查 |
-| SQLite | `sqlite3` 命令行客户端 | — | 只读打开及语句检查 |
+| MySQL | `mysql` command-line client | 3306 | Session read-only mode |
+| PostgreSQL | `psql` command-line client | 5432 | Read-only transactions |
+| SQL Server | Built-in `tedious` native TDS driver | 1433 | Read-only SQL validation |
+| Oracle | `sqlplus` command-line client | 1521 | SQL and client-command validation |
+| SQLite | `sqlite3` command-line client | — | Read-only opening and statement validation |
 
-**SQL Server 不需要安装 `sqlcmd`。** 插件通过运行时依赖 `tedious@20.3.9` 建立原生 TDS 连接。
+**SQL Server does not require `sqlcmd`.** The plugin uses the `tedious@20.3.9` runtime dependency for native TDS connections.
 
-MySQL、PostgreSQL、Oracle、SQLite 则需要安装相应客户端，并确保命令可执行。如果无法通过系统 PATH 找到客户端，可以在数据源配置中填写可执行文件的完整路径。
+MySQL, PostgreSQL, Oracle, and SQLite require their corresponding command-line clients. These clients must be executable from the system PATH or explicitly configured using the full executable path in the data source settings.
 
-Windows 不一定预装 `sqlite3`，使用 SQLite 前请确认客户端已经安装。
+Windows may not include `sqlite3` by default. Install the SQLite command-line client before using SQLite connections.
 
-对于使用旧版 MySQL 认证插件的数据库，如果较新的客户端出现 `ERROR 2059`，可以尝试使用兼容的客户端版本，例如 MySQL 8.4 客户端，并检查数据库账号的认证配置。
+For databases using older MySQL authentication plugins, a newer MySQL client may return `ERROR 2059`. Consider using a compatible client version, such as MySQL 8.4, and review the database account's authentication settings.
 
-有关数据库依赖、连接条件和已知限制，请参阅 [数据库支持说明](docs/DATABASES.md)。
+For connection requirements and known limitations, see [Database Support](docs/DATABASES.md).
 
 ---
 
-## 快速上手
+## Quick Start
 
-### 1. 创建项目
+### 1. Create a Project
 
-打开 DSH 左侧栏的「AI 数据库助手」，创建一个新项目。
+Open AI Database Assistant from the DSH sidebar and create a new project.
 
-项目用于组织数据库连接、查询结果和导出设置。
+Projects organize database connections, query results, and export settings.
 
-### 2. 添加数据库连接
+### 2. Add a Database Connection
 
-选择数据库类型，填写所需的连接信息，例如：
+Select the database engine and enter the required connection details, such as:
 
-- 主机和端口
-- 数据库名称
-- 用户名
-- 密码或 DSH 凭据引用
-- 客户端路径（需要时）
+- Host and port
+- Database name
+- Username
+- Password or DSH credential reference
+- Client executable path, when required
 
-### 3. 测试连接
+### 3. Test the Connection
 
-点击 **「保存并测试」**。
+Click **Save and Test**.
 
-只有连接测试成功后，才可以使用该数据源执行查询。
+A data source can be used for queries only after its connection test succeeds.
 
-### 4. 配置导出目录
+### 4. Configure an Export Directory
 
-在项目的「交付设置」中选择并授权文件保存目录。
+In the project's delivery settings, select and authorize a directory for exported files.
 
-插件只允许向指定的授权目录导出文件。
+The plugin allows exports only to the designated authorized directory.
 
-### 5. 使用自然语言提问
+### 5. Ask a Question in Natural Language
 
-例如：
+For example:
 
-> 统计 2026 年每个月的订单量和销售额，按照月份升序排列。
+> Summarize monthly order counts and sales revenue for 2026, sorted by month in ascending order.
 
-或者：
+Or:
 
-> 找出员工表中已经离职，但账号表中仍处于启用状态的记录。
+> Find employees who have left the company but still have active system accounts.
 
-也可以进行数据差异分析：
+You can also request data reconciliation:
 
-> 对比这两张表的工号，列出只存在于其中一张表的记录。
+> Compare employee IDs in these two tables and list records that exist in only one table.
 
-AI 会结合可访问的数据库结构生成查询，并在需要时进一步确认业务口径。
+AI uses accessible database schema information to construct queries and may ask for clarification when business definitions are ambiguous.
 
-### 6. 查看查询结果
+### 6. Review Query Results
 
-查询完成后，可以查看：
+After execution, you can review:
 
-- 查询字段及数据
-- 前 20 行预览
-- 完整结果行数
-- 执行 SQL
-- 查询耗时
-- 结果完整性
+- Query columns and returned data
+- A preview of the first 20 rows
+- The complete row count
+- The executed SQL
+- Query execution time
+- Result completeness
 
-### 7. 导出结果
+### 7. Export Results
 
-点击 **「导出」**，即可生成对应的：
+Click **Export** to generate:
 
 - `.xlsx`
 - `.csv`
 - `.sql`
 
-三个文件使用同一份已保存的完整查询结果。
+All three files are produced from the same saved complete query result.
 
-如果结果不完整、已被清理，或未配置有效导出目录，插件将拒绝导出。
+Exports are rejected when results are incomplete, the saved data has been cleaned up, or no valid authorized export directory is configured.
 
 ---
 
-## 数据导出说明
+## Data Export Details
 
 ### XLSX
 
-保存查询数据及相关查询说明，适合使用 Excel 查看、分析和整理。
+Contains query data and related query information, suitable for viewing, analyzing, and organizing in Excel.
 
 ### CSV
 
-采用 UTF-8 编码，适合数据交换及导入其他系统。
+Uses UTF-8 encoding for data exchange and importing into other systems.
 
-对于可能被电子表格软件识别为公式的常见前缀，插件会进行安全处理。
+The plugin applies safety handling to common prefixes that spreadsheet applications may interpret as formulas.
 
 ### SQL
 
-保存本次实际执行的只读查询语句，便于复核或重新执行。
+Contains the read-only SQL statement actually executed, allowing review or re-execution.
 
-SQL 文件不包含与 XLSX、CSV 相同的完整结果数据。
+Unlike XLSX and CSV, SQL exports do not contain the complete result dataset.
 
-### 导出限制
+### Export Restrictions
 
-- 默认不覆盖已有同名文件。
-- 覆盖已有文件需要明确确认。
-- 不完整或被截断的结果不可导出。
-- 已清理的数据快照不可重新导出。
-- 文件只能写入经过授权的保存目录。
-
----
-
-## 数据与安全
-
-### 数据库访问权限
-
-插件以只读查询为目标，不提供数据库写入、DDL 或存储过程执行功能。
-
-为降低风险，建议创建专用的数据库只读账号，并使用最小权限原则。
-
-### 凭据管理
-
-连接配置不直接保存明文密码。
-
-可以通过 DSH 凭据系统管理数据库密码，也可以根据操作需要临时提供凭据。
-
-不要在聊天消息、SQL 文本或公开日志中直接填写真实密码。
-
-### AI 与数据处理
-
-AI 可能需要访问数据库结构信息、查询结果以及用户提供的业务问题，以完成分析。
-
-这些内容可能进入所使用模型的上下文，具体处理方式取决于 DSH 的模型配置及服务提供方。
-
-**处理敏感、个人或受监管数据前，请确认模型配置、数据使用政策及组织内部的安全要求。**
-
-### 不可信数据库内容
-
-数据库中的表名、字段名、备注和数据内容均应视为不可信输入。
-
-插件对 SQL 执行进行限制，但 AI 生成的分析结果仍应由使用者结合业务实际进行复核。
-
-### 查询与文件保护
-
-插件会限制查询时间、结果行数和输出字节数。超限时，结果将被标记为不完整，不能作为完整数据导出。
-
-导出目录受到路径及文件操作限制，默认不会覆盖已有文件。
+- Existing files with the same name are not overwritten by default.
+- Overwriting an existing file requires explicit confirmation.
+- Incomplete or truncated results cannot be exported.
+- Data snapshots that have been cleaned up cannot be exported again.
+- Files can only be written to authorized export directories.
 
 ---
 
-## 常见问题
+## Data and Security
 
-### 连接测试失败怎么办？
+### Database Permissions
 
-请依次检查数据库客户端、网络连接、主机与端口、账号密码，以及账号对目标数据库的读取权限。
+The plugin is designed for read-only queries and does not provide database writes, DDL operations, or stored procedure execution.
 
-保存连接配置不代表连接成功，必须先通过连接测试。
+Use dedicated read-only database accounts and follow the principle of least privilege.
 
-### 提示“数据库尚未连接成功”怎么办？
+### Credential Management
 
-打开当前项目的数据源配置，点击「保存并测试」。测试成功后再执行查询。
+Connection configurations do not directly store plaintext passwords.
 
-### 为什么结果显示不完整？
+Database credentials can be managed through the DSH credential system or provided temporarily as needed.
 
-可能是查询结果超过行数或字节限制，或者客户端输出被截断。
+Do not include real passwords in chat messages, SQL text, or publicly shared logs.
 
-建议缩小查询范围、添加过滤条件，或先进行分组聚合。
+### AI and Data Processing
 
-### 为什么无法导出结果？
+AI may need access to database schema information, query results, and user-provided business questions to perform analysis.
 
-常见原因包括：
+This information may be included in the model context. The specific data handling behavior depends on the DSH model configuration and the selected model provider.
 
-- 查询结果不完整。
-- 结果数据已被清理。
-- 未设置有效的保存目录。
-- 当前项目没有相应的导出权限或条件。
+**Before processing sensitive, personal, or regulated data, review your model configuration, the provider's data handling policies, and your organization's security requirements.**
 
-### SQL Server 需要安装 sqlcmd 吗？
+### Untrusted Database Content
 
-不需要。
+Database table names, column names, comments, and stored data must be treated as untrusted input.
 
-SQL Server 使用内置的 `tedious` 原生 TDS 驱动。查询结果支持区分 NULL 与空字符串，并保留高精度 DECIMAL 数值。
+Although the plugin restricts SQL execution, AI-generated analysis should still be reviewed by users against actual business requirements.
 
-### 可以修改数据库中的数据吗？
+### Query and File Protection
 
-不可以。
+The plugin limits query duration, result row counts, and output size. Results exceeding these limits are marked as incomplete and cannot be exported as complete datasets.
 
-插件不提供 INSERT、UPDATE、DELETE、DDL 或存储过程执行能力。
+Export directories are subject to path and file-operation restrictions. Existing files are not overwritten by default.
 
-建议同时使用数据库只读账号，避免仅依赖应用层限制。
+---
 
-### Oracle 密码包含特殊字符怎么办？
+## Frequently Asked Questions
 
-插件会按照 SQL*Plus 的连接规则处理密码中的特殊字符，包括 `@`、`/`、空格及引号等。
+### What should I do if a connection test fails?
 
-如果仍无法连接，建议先使用相同账号通过 `sqlplus` 验证网络和认证配置。
+Check the database client, network connectivity, host and port, credentials, and the account's read permissions.
 
-### SQLite 提示找不到 sqlite3 怎么办？
+Saving a connection configuration does not mean the connection has succeeded. The connection test must complete successfully before querying.
 
-请安装 SQLite 命令行客户端，并确认 `sqlite3` 可以执行。
+### Why does the plugin say the database is not connected?
 
-Windows 用户可以在数据源配置中填写 `sqlite3.exe` 的完整路径。
+Open the current project's data source settings and click **Save and Test**. Run the query after the test succeeds.
 
-### 卸载插件会删除已有项目吗？
+### Why is my result marked as incomplete?
 
-通常不会。
+The query may have exceeded row count or output size limits, or the database client's output may have been truncated.
 
-卸载插件本身一般不会自动删除项目配置、历史结果和已经导出的文件。
+Try narrowing the query range, adding filters, or aggregating the data before retrieving detailed records.
 
-如果需要彻底清理，请先备份并检查对应的数据目录：
+### Why can't I export the results?
+
+Common reasons include:
+
+- The query result is incomplete.
+- The saved result data has been cleaned up.
+- No valid export directory has been configured.
+- The current project does not meet the required export conditions or permissions.
+
+### Does SQL Server require sqlcmd?
+
+No.
+
+SQL Server connections use the built-in `tedious` native TDS driver. Query results distinguish NULL from empty strings and preserve high-precision DECIMAL values.
+
+### Can the plugin modify database records?
+
+No.
+
+The plugin does not provide INSERT, UPDATE, DELETE, DDL, or stored procedure execution capabilities.
+
+Always use a read-only database account rather than relying solely on application-level restrictions.
+
+### What if an Oracle password contains special characters?
+
+The plugin handles special characters according to SQL*Plus connection rules, including `@`, `/`, spaces, and quotation marks.
+
+If the connection still fails, verify network connectivity and authentication using the same account directly through `sqlplus`.
+
+### What if SQLite reports that sqlite3 is missing?
+
+Install the SQLite command-line client and confirm that `sqlite3` can be executed.
+
+On Windows, you can configure the full path to `sqlite3.exe` in the data source settings.
+
+### Does uninstalling the plugin delete existing projects?
+
+Usually not.
+
+Uninstalling the plugin generally does not automatically remove project configurations, historical query results, or exported files.
+
+For complete cleanup, first back up and inspect the corresponding data directory:
 
 ```text
 ~/.dsh/ai-database-assistant/
 ```
 
-**手动删除数据目录可能造成不可恢复的数据丢失，请谨慎操作。**
+**Manually deleting the data directory may cause irreversible data loss. Proceed carefully.**
 
 ---
 
-## 项目文档
+## Project Documentation
 
-| 文档 | 内容 |
+| Document | Description |
 |---|---|
-| [安装指南](docs/INSTALL.md) | 安装、升级、卸载、回退及常见问题 |
-| [使用指南](docs/USAGE.md) | 项目管理、自然语言查询和结果导出 |
-| [数据库支持](docs/DATABASES.md) | 数据库连接、客户端依赖、权限及限制 |
-| [插件详情](docs/DETAIL.md) | 功能简介与插件信息 |
-| [更新日志](CHANGELOG.md) | 正式版本的功能更新与修复记录 |
+| [Installation Guide](docs/INSTALL.md) | Installation, upgrades, uninstallation, rollback, and troubleshooting |
+| [User Guide](docs/USAGE.md) | Project management, natural-language queries, and result exports |
+| [Database Support](docs/DATABASES.md) | Database connections, client dependencies, permissions, and limitations |
+| [Plugin Details](docs/DETAIL.md) | Plugin overview and functionality |
+| [Changelog](CHANGELOG.md) | Features, fixes, and updates in official releases |
+| [Security Policy](SECURITY.md) | Security guidance and private vulnerability reporting |
 
 ---
 
-## 获取与支持
+## Downloads and Support
 
-**npm 软件包**
+**npm package**
 
 ```text
 @agenius/dsh-ai-database-assistant
 ```
 
-**GitHub 源码及问题反馈**
+**GitHub repository**
 
 https://github.com/agenius666/dsh-ai-database-assistant
 
-欢迎通过 GitHub Issues 反馈问题或提出改进建议。
+You can report bugs and suggest improvements through [GitHub Issues](https://github.com/agenius666/dsh-ai-database-assistant/issues).
+
+For security vulnerabilities, follow the [Security Policy](SECURITY.md) and use private vulnerability reporting.
 
 ---
 
-## 许可证
+## License
 
-本项目采用 **Apache License 2.0** 开源许可。
+This project is licensed under the **Apache License 2.0**.
 
-详细条款及第三方版权声明请参阅：
+For license terms and third-party attribution notices, see:
 
 - [LICENSE](LICENSE)
 - [NOTICE](NOTICE)
