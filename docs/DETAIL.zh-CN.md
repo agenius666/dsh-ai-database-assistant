@@ -1,5 +1,7 @@
 # AI 数据库助手
 
+[English](DETAIL.md) | **简体中文**
+
 **用自然语言查询数据库，让数据分析更简单。**
 
 支持 MySQL、PostgreSQL、SQL Server、Oracle、SQLite 五类数据库。AI 可以自动查看表结构、生成并执行只读 SQL、分析查询结果，并导出 XLSX、CSV 和 SQL 文件。
@@ -27,4 +29,4 @@
 - **平台：** Windows、macOS
 - **环境：** DeepSeek Harness（DSH），Node.js >= 22
 
-详细说明请参阅 [README](../README.md)。
+详细说明请参阅 [中文版 README](../README.zh-CN.md)。
