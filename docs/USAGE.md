@@ -1,332 +1,342 @@
-# 使用指南
+# User Guide
 
-本文介绍如何使用 AI 数据库助手（DSH 插件）创建项目、连接数据库、通过自然语言查询数据、查看结果以及导出文件。
+**English** | [简体中文](USAGE.zh-CN.md)
 
-**适用版本：** `1.0.3`  
-**支持平台：** Windows、macOS  
-**支持数据库：** MySQL、PostgreSQL、SQL Server、Oracle、SQLite
+This guide explains how to use AI Database Assistant (DSH Plugin) to create projects, connect to databases, query data using natural language, review results, and export files.
 
-使用前请确保已在 DeepSeek Harness（DSH）中安装并启用插件。首次安装或升级请参阅 [安装指南](INSTALL.md)。
+**Applicable version:** `1.0.3`  
+**Supported platforms:** Windows and macOS  
+**Supported databases:** MySQL, PostgreSQL, SQL Server, Oracle, and SQLite
+
+Before proceeding, make sure the plugin is installed and enabled in DeepSeek Harness (DSH). For initial installation or upgrades, see the [Installation Guide](INSTALL.md).
 
 ---
 
-## 1. 完成一次数据库查询
+## 1. Performing a Database Query
 
-### 第一步：创建项目
+### Step 1: Create a Project
 
-打开 DSH，在左侧栏找到「AI 数据库助手」，点击 **「新建项目」**。
+Open DSH, find **AI Database Assistant** in the left sidebar, and click **New Project**.
 
-项目用于独立管理：
+Each project independently manages:
 
-- 数据库连接配置
-- 文件保存目录
-- 查询结果与历史记录
-- 与项目关联的 AI 会话
+- Database connection configurations
+- Export directories
+- Query results and history
+- AI conversations associated with the project
 
-建议按业务系统、分析任务或实际工作项目创建不同的项目，便于集中管理。
+Consider creating separate projects for different business systems, analysis tasks, or actual work engagements to keep information organized.
 
-### 第二步：添加数据库连接
+### Step 2: Add a Database Connection
 
-进入项目后，点击 **「添加连接」**，选择数据库类型并填写相关信息。
+Open a project, click **Add Connection**, select a database engine, and enter the required information.
 
-| 配置项 | 说明 |
+| Setting | Description |
 |---|---|
-| 数据库类型 | 支持 MySQL、PostgreSQL、SQL Server、Oracle、SQLite |
-| 连接名称 | 用于在插件中识别数据源，并辅助生成导出文件名称 |
-| 主机与端口 | 目标数据库的网络地址及服务端口 |
-| 用户名 | 用于访问目标数据库的账号 |
-| 数据库名称 | 根据数据库类型填写目标数据库或相应连接标识 |
-| Schema | PostgreSQL、SQL Server、Oracle 可按需填写；MySQL 通常不需要 |
-| 密码 | 用于连接认证，可以选择是否交由 DSH 凭据系统保存 |
-| 凭据引用 | 引用已保存在 DSH 中的数据库凭据，与直接输入密码二选一 |
-| 记住密码 | 启用后通过 DSH 凭据系统保存，供后续查询使用 |
-| 客户端可执行文件 | MySQL、PostgreSQL、Oracle、SQLite 可按需指定客户端绝对路径 |
+| Database type | MySQL, PostgreSQL, SQL Server, Oracle, or SQLite |
+| Connection name | Identifies the data source within the plugin and helps generate export filenames |
+| Host and port | Network address and service port of the target database |
+| Username | Account used to access the target database |
+| Database name | Target database or corresponding connection identifier, depending on the database engine |
+| Schema | Optional for PostgreSQL, SQL Server, and Oracle; generally unnecessary for MySQL |
+| Password | Used for connection authentication; can optionally be stored through DSH credential management |
+| Credential reference | References database credentials already stored in DSH, as an alternative to entering a password directly |
+| Remember password | Stores the password through the DSH credential system for subsequent queries |
+| Client executable | Optional absolute path to the client executable for MySQL, PostgreSQL, Oracle, or SQLite |
 
-**数据库类型的特殊说明：**
+**Database-specific considerations:**
 
-- **MySQL：** 使用本机 `mysql` 客户端。如果出现认证插件兼容问题，可以在连接设置中指定其他兼容版本的客户端路径。
-- **PostgreSQL：** 使用本机 `psql` 客户端，可根据需要指定 Schema。
-- **SQL Server：** 使用内置 `tedious` 原生 TDS 驱动，无需安装 `sqlcmd`。如使用自签名证书，可根据实际安全要求配置服务器证书信任选项。
-- **Oracle：** 使用本机 `sqlplus` 客户端，按实际连接要求填写数据库及 Schema 信息。
-- **SQLite：** 主要填写数据库文件路径，插件以只读方式访问，不需要主机、端口和网络数据库账号。
+- **MySQL:** Uses the local `mysql` client. If you encounter an authentication plugin compatibility issue, you can configure the path to another compatible client version.
+- **PostgreSQL:** Uses the local `psql` client. Specify a Schema if needed.
+- **SQL Server:** Uses the built-in `tedious` native TDS driver; `sqlcmd` is not required. If the server uses a self-signed certificate, configure the server certificate trust option according to your security requirements.
+- **Oracle:** Uses the local `sqlplus` client. Enter database and Schema information according to the actual connection requirements.
+- **SQLite:** Primarily requires the database file path. The plugin accesses the file in read-only mode; no host, port, or network database account is required.
 
-客户端路径留空时，插件将尝试从系统 `PATH` 查找对应程序。Windows 用户使用 SQLite 时，如果没有安装 `sqlite3.exe`，需要先安装客户端并填写实际路径。
+If the client executable path is left empty, the plugin attempts to locate the corresponding program through the system `PATH`.
 
-**关于数据库密码**
+On Windows, if `sqlite3.exe` is not installed, install the SQLite command-line client and specify its path if necessary.
 
-可以直接填写密码用于连接测试，也可以使用已有的 DSH 凭据引用。
+**About database passwords**
 
-选择「记住密码」后，密码将交由 DSH 凭据系统管理。未选择时，密码通常仅用于当前操作；如需后续自动查询，应配置可持续使用的凭据引用。
+You can enter a password directly for connection testing or use an existing DSH credential reference.
 
-插件不应将数据库密码写入查询结果、导出文件或普通日志。
+When **Remember Password** is enabled, the password is managed by the DSH credential system. Otherwise, the password is generally used only for the current operation. Configure a persistent credential reference if subsequent automated queries require authentication.
 
-**关于 SQL Server 证书**
+Database passwords should not be written into query results, exported files, or ordinary logs.
 
-「信任服务器证书」可能降低服务器证书身份验证的严格程度。仅在确认连接目标可信、了解相关安全影响后使用，不建议为解决连接错误而长期无条件启用。
+**About SQL Server certificates**
 
-填写完成后，点击 **「保存并测试」**。
+Enabling **Trust Server Certificate** may reduce the strictness of server certificate identity verification. Use this option only when you trust the target server and understand the security implications. Do not leave it unconditionally enabled simply to bypass a connection error.
 
-只有测试成功的连接才会标记为「可用」，并允许后续查询。
+After entering the connection information, click **Save and Test**.
 
-### 第三步：设置文件保存目录
+Only connections that pass the test are marked as **Available** and permitted for subsequent queries.
 
-进入项目的 **「交付设置」**，选择并保存一个文件目录。
+### Step 3: Configure an Export Directory
 
-该目录用于存储插件生成的查询结果导出文件。
+Open the project's **Delivery Settings** and select a directory for saving exported files.
 
-请确认：
+This directory is used to store files generated from query results.
 
-- 目录真实存在或可以按插件规则创建。
-- 当前用户具有必要的写入权限。
-- 目录位于允许使用的位置。
-- 目录不包含需要避免覆盖的重要业务文件。
+Verify that:
 
-插件只能向项目授权的目录执行导出操作。
+- The directory exists or can be created according to the plugin's rules.
+- The current user has the necessary write permissions.
+- The directory is located within an allowed path.
+- The directory does not contain important business files that should not be overwritten.
 
-### 第四步：使用自然语言提问
+The plugin can export files only to directories authorized for the project.
 
-完成数据库连接后，可以直接在插件工作台中提出分析需求。
+### Step 4: Ask Questions in Natural Language
 
-例如：
+After configuring a database connection, you can submit analysis requests directly from the plugin workspace.
 
-- “统计 2026 年每个月的订单量和销售额，按月份升序排列。”
-- “找出已经离职但账号仍处于启用状态的员工。”
-- “比较两张表中的工号，列出只存在于其中一张表的记录。”
-- “查看最近 30 天执行失败的任务，并统计主要错误原因。”
+For example:
 
-AI 会根据可用的数据库结构，尝试识别相关数据表、字段和关联关系，再生成并执行只读查询。
+- "Summarize monthly order counts and sales revenue for 2026, sorted by month in ascending order."
+- "Find employees who have left the company but still have active system accounts."
+- "Compare employee IDs in two tables and list records that exist in only one table."
+- "Show tasks that failed in the last 30 days and summarize their main error causes."
 
-当业务条件不明确时，AI 可能进一步询问，例如时间范围、账号状态定义或金额是否含税。
+AI attempts to identify relevant tables, columns, and relationships using accessible database schema information, then generates and executes read-only queries.
 
-**使用 AI 会话时请注意：**
+When business requirements are ambiguous, AI may ask follow-up questions about date ranges, account status definitions, or whether amounts include tax.
 
-从工作台发起提问时，插件会自动创建或切换到相应的助手会话，并关联当前项目。
+**Important when using AI conversations:**
 
-如果手动新建了「AI 数据库助手」会话，请先在左侧工作台选中对应项目，再在会话中提问。
+When you ask a question from the workspace, the plugin automatically creates or switches to the appropriate assistant conversation and associates it with the current project.
 
-这样能够避免在错误的项目上下文中进行查询。
+If you manually create an **AI Database Assistant** conversation, select the appropriate project in the left workspace before asking questions.
 
-### 第五步：查看查询结果
+This helps prevent queries from being executed in the wrong project context.
 
-查询完成后，结果卡片会展示相关信息，包括：
+### Step 5: Review Query Results
 
-| 内容 | 说明 |
+After a query finishes, its result card displays information such as:
+
+| Item | Description |
 |---|---|
-| 查询字段 | 本次结果包含的列名 |
-| 数据预览 | 默认显示前 20 行数据 |
-| 结果行数 | 本次保存结果的行数 |
-| 执行 SQL | 数据库实际执行的查询语句 |
-| 执行耗时 | 本次查询使用的时间 |
-| 完整性状态 | 标明结果是否完整、是否达到上限 |
+| Query columns | Column names included in the result |
+| Data preview | The first 20 rows are displayed by default |
+| Result row count | Number of rows in the saved result |
+| Executed SQL | SQL statement actually executed by the database |
+| Execution time | Time taken to execute the query |
+| Completeness status | Indicates whether the result is complete or a limit has been reached |
 
-点击 **「查看」**，可以查看更详细的查询结果信息。
+Click **View** to inspect more detailed query results.
 
-**注意：** 页面预览只显示部分数据，不代表完整结果只有这些行。是否能够导出，应以结果的完整性状态为准。
+**Note:** The preview displays only part of the data. It does not mean the complete result contains only those rows. Export eligibility depends on the result completeness status.
 
-如果查询达到行数、字节数或其他执行限制，插件会标记结果为不完整。
+If a query reaches a row count, byte size, or other execution limit, the plugin marks the result as incomplete.
 
-### 第六步：导出查询结果
+### Step 6: Export Query Results
 
-确认结果完整且已配置保存目录后，点击 **「导出」**。
+After confirming that the result is complete and an export directory has been configured, click **Export**.
 
-插件会基于同一次保存的查询结果生成三个文件：
+The plugin generates three files from the same saved query result:
 
-| 文件格式 | 内容及用途 |
+| Format | Contents and Purpose |
 |---|---|
-| XLSX | 查询数据及相关说明，适合 Excel 查看、分析和交付 |
-| CSV | 查询数据，适合数据交换及导入其他系统 |
-| SQL | 本次实际执行的只读查询语句，便于复核或重新执行 |
+| XLSX | Query data and related information, suitable for viewing, analysis, and delivery in Excel |
+| CSV | Query data, suitable for data exchange and import into other systems |
+| SQL | The read-only SQL statement actually executed, suitable for review or re-execution |
 
-**导出规则：**
+**Export rules:**
 
-- 三种文件对应同一次查询。
-- 默认不覆盖已有同名文件。
-- 覆盖已有文件需要用户明确确认。
-- 查询结果不完整时不允许导出。
-- 已清理的结果无法直接重新导出。
-- 未设置有效保存目录时不能导出。
+- All three files correspond to the same query.
+- Existing files with the same name are not overwritten by default.
+- Overwriting an existing file requires explicit user confirmation.
+- Incomplete query results cannot be exported.
+- Results that have been cleaned up cannot be exported again directly.
+- An authorized, valid export directory must be configured.
 
-SQL 文件保存的是查询语句，不是查询结果的数据副本。以后重新执行时，结果可能因数据库数据变化、权限变化或执行环境不同而改变。
+The SQL file contains the query statement, not a copy of the returned data.
 
-对于包含当前时间、随机数等函数的查询，重新执行后尤其可能出现不同结果。
+Re-executing the query may produce different results because of changes in database contents, permissions, or the execution environment.
 
----
-
-## 2. 使用「询问 AI」排查错误
-
-当插件出现数据库连接或操作错误时，部分错误提示旁会提供 **「询问 AI」** 按钮。
-
-点击后，插件会将相关项目上下文、错误信息及排查说明带入已绑定的 AI 数据库助手会话，并切换至对应会话。
-
-用户无需手动复制完整错误信息。
-
-常见用途包括：
-
-- 数据库客户端找不到。
-- 主机或端口无法连接。
-- 数据库身份认证失败。
-- SQL 查询执行异常。
-- 数据库权限不足。
-- 文件导出失败。
-
-AI 可以结合错误信息提供排查建议，但具体原因仍需通过数据库、网络、客户端及 DSH 环境验证。
-
-**隐私提醒：** 错误信息可能包含数据库主机、库名或其他环境信息。通过「询问 AI」发送前，请确认使用的模型服务符合实际数据安全要求。
+Queries involving functions that return the current time, random values, or similar dynamic values are especially likely to produce different results when executed again.
 
 ---
 
-## 3. 复制其他项目的数据库连接
+## 2. Troubleshooting with Ask AI
 
-如果已经在另一个项目中配置了相同的数据库，可以使用 **「复制其他项目连接」** 功能。
+When a database connection or plugin operation fails, some error messages provide an **Ask AI** button.
 
-操作步骤：
+Clicking this button sends the relevant project context, error details, and troubleshooting information to the associated AI Database Assistant conversation and switches to that conversation.
 
-1. 打开目标项目。
-2. 在「添加连接」旁选择「复制其他项目连接」。
-3. 选择来源项目及已有连接。
-4. 检查复制后的连接信息。
-5. 根据需要补充凭据并重新测试连接。
+You do not need to manually copy the entire error message.
 
-复制的内容主要是主机、端口、用户名、数据库名称等连接配置。
+Typical scenarios include:
 
-**不会复制数据库密码、查询结果或项目保存目录。**
+- Database client not found
+- Host or port unreachable
+- Database authentication failure
+- SQL query execution errors
+- Insufficient database permissions
+- File export failure
 
-复制后应再次执行「保存并测试」，确认当前项目具有正常访问权限。
+AI can suggest troubleshooting steps based on the error information. However, the actual cause still needs to be verified against the database, network, client, and DSH environment.
 
----
-
-## 4. 查询结果与历史管理
-
-每次最终查询会保存一份独立的结果记录，便于后续查看和复核。
-
-通常可以查看：
-
-- 查询时间
-- 所属项目和数据源
-- 实际执行 SQL
-- 结果行数与字段
-- 查询完整性
-- 已保存的结果数据
-
-历史结果默认保存在插件数据目录中，不会因关闭结果页面而自动消失。
-
-### 清理历史结果
-
-如果不再需要某些历史数据，可以在结果列表中使用 **「清理历史结果」** 功能。
-
-清理前请注意：
-
-- 已清理的结果快照无法直接用于重新导出。
-- 已经导出到项目保存目录的 XLSX、CSV 和 SQL 文件通常不受内部历史清理操作影响。
-- 清理操作不代表删除数据库中的原始业务数据。
-
-对于需要长期保存的重要查询结果，建议提前导出并进行独立备份。
+**Privacy notice:** Error messages may contain database hosts, database names, or other environment information. Before using **Ask AI**, confirm that your selected model service meets your data security requirements.
 
 ---
 
-## 5. 使用建议
+## 3. Copying Database Connections From Other Projects
 
-### 使用独立只读账号
+If the same database has already been configured in another project, you can use **Copy Connection From Another Project**.
 
-建议专门创建数据库只读账号，并仅授予完成分析任务所需的最小权限。
+Follow these steps:
 
-不要因为插件提供了只读 SQL 检查，就直接使用数据库管理员账号执行查询。
+1. Open the target project.
+2. Select **Copy Connection From Another Project** next to **Add Connection**.
+3. Select the source project and an existing connection.
+4. Review the copied connection information.
+5. Provide credentials if needed and test the connection again.
 
-### 明确业务分析口径
+The copied information mainly includes connection settings such as the host, port, username, and database name.
 
-在提问时尽量提供清晰的条件，例如：
+**Database passwords, query results, and project export directories are not copied.**
 
-- 查询时间范围。
-- 需要统计的业务对象。
-- 相关状态的定义。
-- 是否需要排除已删除或已取消的记录。
-- 金额是否含税。
-- 排序和汇总方式。
-
-业务条件越明确，越有利于 AI 生成符合实际需求的查询。
-
-### 控制查询范围
-
-对于大规模数据库，建议优先：
-
-- 限制时间范围。
-- 添加必要筛选条件。
-- 使用适当的分组与聚合。
-- 避免无条件查询大量数据。
-- 对复杂查询结果进行人工复核。
-
-### 保护敏感数据
-
-AI 查询可能将数据库结构、查询结果的部分内容和用户问题带入模型上下文。
-
-对于包含个人信息、财务数据或其他敏感内容的数据库，应先确认相应的模型配置、权限及数据使用要求。
+After copying a connection, click **Save and Test** again to confirm that the current project can access the database successfully.
 
 ---
 
-## 6. 常见问题
+## 4. Query Results and History Management
 
-### 为什么 AI 需要先查看表结构？
+Each final query saves a separate result record for later viewing and review.
 
-不同数据库的表名、字段名及业务含义可能不同。
+You can typically inspect:
 
-先查看实际结构能够减少错误引用表名或字段名的情况，也有利于 AI 判断关联关系和统计口径。
+- Query time
+- Associated project and data source
+- Executed SQL statement
+- Result row counts and columns
+- Query completeness
+- Saved result data
 
-但 AI 并不一定能够自动理解所有业务含义，重要结论仍需要人工复核。
+Historical results are stored in the plugin data directory by default and do not automatically disappear when you close the result page.
 
-### 为什么 AI 会反问我？
+### Cleaning Up Historical Results
 
-当需求缺少必要条件或存在多种合理解释时，AI 可能询问时间范围、业务状态、统计口径等信息。
+If some historical data is no longer needed, use **Clean Up Historical Results** in the result list.
 
-建议根据实际业务规则回答，避免仅凭字段名称推断业务含义。
+Before cleaning up, note that:
 
-### 为什么查询结果被截断？
+- Cleaned-up result snapshots cannot be used directly for another export.
+- XLSX, CSV, and SQL files already exported to the project's designated directory are generally unaffected by internal history cleanup.
+- Cleaning up historical results does not delete original business data from the database.
 
-查询可能达到了行数、输出字节数或其他执行限制。
-
-建议缩小查询时间范围、增加过滤条件或先执行汇总统计。
-
-被标记为不完整的结果不能导出。
-
-### 可以通过插件修改数据库吗？
-
-不可以。
-
-插件仅提供只读查询，不支持数据库写入、DDL 或存储过程执行。
-
-仍建议使用数据库侧的只读账号作为安全保障。
-
-### 导出的 SQL 文件可以直接运行吗？
-
-SQL 文件保存的是本次实际执行的查询语句，可以在具备相应权限及兼容环境的数据库中用于复核或重新执行。
-
-但 SQL 文件不会保存原始查询结果的数据快照。
-
-数据库内容、权限或运行环境发生变化后，重新执行得到的结果可能不同。
-
-### 查询结果历史会一直保留吗？
-
-当前版本默认不会自动清理历史查询结果，但历史记录仍可能因用户主动清理、数据目录删除、存储异常或环境迁移而丢失。
-
-需要长期保留的结果应单独导出并备份。
-
-### 为什么复制连接后还需要测试？
-
-复制功能主要复用连接配置信息，不保证原有密码、网络条件或数据库访问权限仍然有效。
-
-重新执行连接测试，可以确认目标项目中的连接是否可用。
-
-### 查询结果可以跨项目使用吗？
-
-项目之间的连接、保存目录和结果历史相互隔离。
-
-如果需要在另一个项目中使用相同数据库，可以复制连接配置并重新测试，但不能将一个项目的历史结果自动视为另一个项目的结果。
+For important query results that must be retained long-term, export and back them up separately before cleanup.
 
 ---
 
-## 7. 相关文档
+## 5. Recommended Practices
 
-- [项目介绍](../README.md)
-- [安装与升级](INSTALL.md)
-- [数据库支持](DATABASES.md)
-- [插件详情](DETAIL.md)
-- [更新日志](../CHANGELOG.md)
+### Use a Dedicated Read-Only Account
+
+Create a dedicated read-only database account and grant only the minimum permissions necessary for the analysis.
+
+Do not use a database administrator account simply because the plugin provides read-only SQL validation.
+
+### Define Business Requirements Clearly
+
+When asking questions, provide clear conditions whenever possible, such as:
+
+- Query date range
+- Business entities to analyze
+- Definitions of relevant statuses
+- Whether deleted or canceled records should be excluded
+- Whether monetary amounts include tax
+- Sorting and aggregation requirements
+
+The clearer your business requirements, the more likely AI is to generate queries that match your intended analysis.
+
+### Control Query Scope
+
+For large databases, consider:
+
+- Limiting the date range
+- Adding appropriate filters
+- Using grouping and aggregation
+- Avoiding unrestricted retrieval of large datasets
+- Manually reviewing the results of complex queries
+
+### Protect Sensitive Data
+
+AI queries may include database schema information, portions of query results, and user questions in the model context.
+
+Before analyzing databases containing personal information, financial data, or other sensitive content, confirm the applicable model configuration, access permissions, and data usage requirements.
+
+---
+
+## 6. Frequently Asked Questions
+
+### Why Does AI Need to Inspect the Database Schema First?
+
+Table names, column names, and business meanings may differ across databases.
+
+Inspecting the actual schema reduces the risk of referencing incorrect tables or columns. It also helps AI identify relationships between tables and determine appropriate aggregation logic.
+
+However, AI may not automatically understand every business definition. Important conclusions still require human review.
+
+### Why Does AI Ask Follow-Up Questions?
+
+When a request lacks necessary conditions or has multiple reasonable interpretations, AI may ask about date ranges, business statuses, aggregation rules, or other details.
+
+Answer according to the actual business rules rather than relying only on assumptions based on column names.
+
+### Why Was My Query Result Truncated?
+
+The query may have reached a row count, output byte size, or other execution limit.
+
+Try narrowing the query period, adding filters, or performing an aggregated query first.
+
+Results marked as incomplete cannot be exported.
+
+### Can I Modify Database Records Through the Plugin?
+
+No.
+
+The plugin supports read-only queries only. Database writes, DDL operations, and stored procedure execution are not supported.
+
+Using a database-enforced read-only account remains recommended as an additional security measure.
+
+### Can Exported SQL Files Be Executed Directly?
+
+SQL files contain the query statements actually executed. They can be used for review or re-execution in a compatible database environment with appropriate permissions.
+
+However, SQL files do not preserve the original result data snapshot.
+
+If database contents, permissions, or the execution environment change, re-execution may produce different results.
+
+### Will Query History Be Retained Forever?
+
+The current version does not automatically clean up historical query results by default.
+
+However, history may still be lost through manual cleanup, deletion of the data directory, storage failures, or environment migration.
+
+Export and independently back up results that must be retained long-term.
+
+### Why Must I Test a Connection After Copying It?
+
+Connection copying mainly reuses configuration information. It does not guarantee that the original password, network conditions, or database permissions remain valid.
+
+Running another connection test confirms whether the copied connection is usable in the target project.
+
+### Can Query Results Be Shared Across Projects?
+
+Database connections, export directories, and result histories are isolated between projects.
+
+If another project needs access to the same database, you can copy the connection configuration and test it again.
+
+However, historical query results from one project cannot automatically be treated as results belonging to another project.
+
+---
+
+## 7. Related Documentation
+
+- [Project Overview](../README.md)
+- [Installation and Upgrade](INSTALL.md)
+- [Database Support](DATABASES.md)
+- [Plugin Details](DETAIL.md)
+- [Changelog](../CHANGELOG.md)
