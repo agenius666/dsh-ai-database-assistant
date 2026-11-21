@@ -14,7 +14,7 @@ AI Database Assistant supports five database engines: MySQL, PostgreSQL, SQL Ser
 - **Multiple export formats:** Export XLSX, CSV, and SQL files with one action.
 - **Multi-project management:** Manage database connections and query results independently across projects.
 - **Read-only safety:** Restrict non-read-only operations. Dedicated read-only database accounts are recommended.
-- **Multilingual interface:** Supports 10 interface languages.
+- **Multilingual interface:** Supports 10 interface languages: Simplified Chinese (简体中文), Traditional Chinese (繁體中文), English, Japanese (日本語), Korean (한국어), Spanish (Español), French (Français), German (Deutsch), Russian (Русский), and Portuguese (Português).
 
 ## Quick Start
 
