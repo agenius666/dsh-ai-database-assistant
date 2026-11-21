@@ -1,5 +1,7 @@
 # 更新日志
 
+[English](CHANGELOG.md) | **简体中文**
+
 本文件记录 AI 数据库助手（DSH 插件）的正式版本更新、功能改进、兼容性调整及已知限制。
 
 ## 1.0.3
@@ -63,6 +65,6 @@
 
 更多安装、数据库连接及使用说明，请参阅：
 
-- [安装指南](docs/INSTALL.md)
-- [使用指南](docs/USAGE.md)
-- [数据库支持](docs/DATABASES.md)
+- [安装指南](docs/INSTALL.zh-CN.md)
+- [使用指南](docs/USAGE.zh-CN.md)
+- [数据库支持](docs/DATABASES.zh-CN.md)
