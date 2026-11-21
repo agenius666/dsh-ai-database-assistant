@@ -1,8 +1,9 @@
+
 {
   "meta": {
     "title": "AI 数据库助手",
     "description": "只读连接 MySQL / PostgreSQL / SQL Server / Oracle / SQLite，用自然语言完成查询、统计、关联分析与 XLSX/CSV/SQL 三文件导出。",
-    "detail": "docs/DETAIL.md"
+    "detail": "docs/DETAIL.zh-CN.md"
   },
   "panel": {
     "label": "AI 数据库助手"
