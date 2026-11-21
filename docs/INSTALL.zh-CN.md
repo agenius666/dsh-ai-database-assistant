@@ -1,5 +1,7 @@
 # 安装与升级指南
 
+[English](INSTALL.md) | **简体中文**
+
 本文介绍 AI 数据库助手（DSH 插件）的安装、升级、卸载、版本回退及常见问题处理方法。
 
 **适用版本：** `1.0.3`
@@ -39,7 +41,7 @@ MySQL、PostgreSQL、Oracle 和 SQLite 需要在本机安装对应客户端，�
 
 Windows 不一定预装 SQLite 命令行客户端，使用 SQLite 前请确认 `sqlite3.exe` 已正确安装。
 
-详细要求参见 [数据库支持说明](DATABASES.md)。
+详细要求参见 [数据库支持说明](DATABASES.zh-CN.md)。
 
 ---
 
@@ -174,7 +176,7 @@ npm install --omit=dev
 
 结果不完整、保存目录未授权或数据快照已被清理时，插件可能拒绝导出。
 
-完成安装后，可以继续阅读 [使用指南](USAGE.md)。
+完成安装后，可以继续阅读 [使用指南](USAGE.zh-CN.md)。
 
 ---
 
@@ -410,11 +412,11 @@ https://github.com/agenius666/dsh-ai-database-assistant
 
 ## 9. 相关文档
 
-- [项目介绍](../README.md)
-- [使用指南](USAGE.md)
-- [数据库支持](DATABASES.md)
-- [插件详情](DETAIL.md)
-- [更新日志](../CHANGELOG.md)
+- [项目介绍](../README.zh-CN.md)
+- [使用指南](USAGE.zh-CN.md)
+- [数据库支持](DATABASES.zh-CN.md)
+- [插件详情](DETAIL.zh-CN.md)
+- [更新日志](../CHANGELOG.zh-CN.md)
 
 ## 10. 许可证
 
