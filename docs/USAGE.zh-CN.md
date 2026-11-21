@@ -1,12 +1,14 @@
 # 使用指南
 
+[English](USAGE.md) | **简体中文**
+
 本文介绍如何使用 AI 数据库助手（DSH 插件）创建项目、连接数据库、通过自然语言查询数据、查看结果以及导出文件。
 
 **适用版本：** `1.0.3`  
 **支持平台：** Windows、macOS  
 **支持数据库：** MySQL、PostgreSQL、SQL Server、Oracle、SQLite
 
-使用前请确保已在 DeepSeek Harness（DSH）中安装并启用插件。首次安装或升级请参阅 [安装指南](INSTALL.md)。
+使用前请确保已在 DeepSeek Harness（DSH）中安装并启用插件。首次安装或升级请参阅 [安装指南](INSTALL.zh-CN.md)。
 
 ---
 
@@ -325,8 +327,8 @@ SQL 文件保存的是本次实际执行的查询语句，可以在具备相应�
 
 ## 7. 相关文档
 
-- [项目介绍](../README.md)
-- [安装与升级](INSTALL.md)
-- [数据库支持](DATABASES.md)
-- [插件详情](DETAIL.md)
-- [更新日志](../CHANGELOG.md)
+- [项目介绍](../README.zh-CN.md)
+- [安装与升级](INSTALL.zh-CN.md)
+- [数据库支持](DATABASES.zh-CN.md)
+- [插件详情](DETAIL.zh-CN.md)
+- [更新日志](../CHANGELOG.zh-CN.md)
